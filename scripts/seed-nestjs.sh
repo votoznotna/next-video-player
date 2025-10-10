@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🌱 Seeding database with Docker..."
+echo "🌱 Seeding NestJS database with Docker..."
 
 # Navigate to project root
 cd "$(dirname "$0")/.."
@@ -12,8 +12,8 @@ if ! docker-compose -f docker-compose.dev.yml ps | grep -q "Up"; then
     exit 1
 fi
 
-# Run the seed script inside the backend container
-echo "📦 Running seed script in backend container..."
-docker-compose -f docker-compose.dev.yml exec backend npm run seed
+# Run the seed script inside the NestJS backend container
+echo "📦 Running seed script in NestJS backend container..."
+docker-compose -f docker-compose.dev.yml exec backend-nestjs npm run seed
 
-echo "✅ Seeding completed!"
+echo "✅ NestJS seeding completed!"

@@ -15,17 +15,27 @@ if lsof -ti:3000 > /dev/null 2>&1; then
     lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 fi
 
-# Kill processes on port 3001 (Backend)
-if lsof -ti:3001 > /dev/null 2>&1; then
-    echo "   Killing processes on port 3001 (Backend)..."
-    lsof -ti:3001 | xargs kill -9 2>/dev/null || true
-fi
+  # Kill processes on port 8000 (FastAPI Backend)
+  if lsof -ti:8000 > /dev/null 2>&1; then
+      echo "   Killing processes on port 8000 (FastAPI Backend)..."
+      lsof -ti:8000 | xargs kill -9 2>/dev/null || true
+  fi
+
+  # Kill processes on port 3001 (NestJS Backend)
+  if lsof -ti:3001 > /dev/null 2>&1; then
+      echo "   Killing processes on port 3001 (NestJS Backend)..."
+      lsof -ti:3001 | xargs kill -9 2>/dev/null || true
+  fi
 
 # Kill processes on port 5432 (PostgreSQL)
 if lsof -ti:5432 > /dev/null 2>&1; then
     echo "   Killing processes on port 5432 (PostgreSQL)..."
     lsof -ti:5432 | xargs kill -9 2>/dev/null || true
 fi
+
+# Remove project-specific Docker images
+echo "🗑️  Removing project Docker images..."
+docker rmi video-player-frontend video-player-backend video-player-backend-nestjs video-player-backend-fastapi 2>/dev/null || true
 
 # Remove unused Docker resources
 docker system prune -f

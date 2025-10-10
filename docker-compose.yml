@@ -10,7 +10,7 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend-nestjs/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - video-player-network
 
@@ -21,18 +21,35 @@ services:
     container_name: video-player-backend
     environment:
       DATABASE_URL: postgresql://postgres:password@postgres:5432/video_player
-      NODE_ENV: development
+      NODE_ENV: production
     ports:
       - '3001:3001'
     volumes:
-      - ./backend:/app
+      - ./backend-fastapi:/app
+      - ./videos:/app/videos
+    depends_on:
+      - postgres
+    networks:
+      - video-player-network
+
+  backend-nestjs:
+    build:
+      context: ./backend-nestjs
+      dockerfile: Dockerfile
+    container_name: video-player-backend-nestjs
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/video_player
+      NODE_ENV: production
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./backend-nestjs:/app
       - /app/node_modules
       - ./videos:/app/videos
     depends_on:
       - postgres
     networks:
       - video-player-network
-    command: npm run start:dev
 
   frontend:
     build:

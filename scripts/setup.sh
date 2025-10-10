@@ -22,7 +22,7 @@ cd frontend && npm install && cd ..
 
 # Install backend dependencies
 echo "📦 Installing backend dependencies..."
-cd backend && npm install && cd ..
+cd backend-nestjs && npm install && cd ..
 
 # Start services
 echo "🐳 Starting Docker services..."
@@ -38,7 +38,7 @@ docker-compose ps
 
 # Seed the database
 echo "🌱 Seeding database..."
-cd backend && npm run seed && cd ..
+cd backend-nestjs && npm run seed && cd ..
 
 echo ""
 echo "✅ Setup completed successfully!"

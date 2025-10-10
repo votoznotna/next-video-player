@@ -5,22 +5,23 @@
   "private": true,
   "workspaces": [
     "frontend",
-    "backend"
+    "backend-nestjs"
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run start:dev",
+    "dev:backend": "cd backend-nestjs && npm run start:dev",
     "build": "npm run build:backend && npm run build:frontend",
     "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend && npm run build",
+    "build:backend": "cd backend-nestjs && npm run build",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down -v",
     "docker:clean": "docker-compose down -v && docker system prune -f",
-    "setup": "npm install && cd frontend && npm install && cd ../backend && npm install",
-    "seed": "cd backend && npm run seed",
-    "seed:js": "cd backend && npm run seed:js",
-    "seed:docker": "docker-compose -f docker-compose.dev.yml exec backend sh -c 'cd /app && npm run seed'"
+    "setup": "npm install && cd frontend && npm install && cd ../backend-nestjs && npm install",
+    "seed": "cd backend-nestjs && npm run seed",
+    "seed:js": "cd backend-nestjs && npm run seed:js",
+    "seed:docker": "docker-compose -f docker-compose.dev.yml exec backend python seed.py",
+    "seed:nestjs": "docker-compose -f docker-compose.dev.yml exec backend-nestjs sh -c 'cd /app && npm run seed'"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

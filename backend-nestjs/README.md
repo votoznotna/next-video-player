@@ -13,6 +13,7 @@ A robust NestJS backend API for the Advanced Video Player application, featuring
 ## 🚀 Features
 
 ### Core Features
+
 - **GraphQL API** with introspection and playground
 - **Video Management** - CRUD operations for videos
 - **Annotation System** - Time-based video annotations
@@ -24,16 +25,19 @@ A robust NestJS backend API for the Advanced Video Player application, featuring
 ### API Endpoints
 
 #### GraphQL Playground
+
 - **URL**: `http://localhost:3001/graphql`
 - **Features**: Interactive query builder, schema documentation
 
 #### Video Streaming
+
 - **URL**: `http://localhost:3001/videos/{filename}`
 - **Features**: Direct video file access, proper MIME types
 
 ## 📊 Database Schema
 
 ### Videos Table
+
 ```typescript
 @Entity('videos')
 export class Video {
@@ -67,12 +71,13 @@ export class Video {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => Annotation, annotation => annotation.video)
+  @OneToMany(() => Annotation, (annotation) => annotation.video)
   annotations?: Annotation[];
 }
 ```
 
 ### Annotations Table
+
 ```typescript
 @Entity('annotations')
 export class Annotation {
@@ -97,7 +102,7 @@ export class Annotation {
   @Column({ default: '#3B82F6' })
   color: string;
 
-  @ManyToOne(() => Video, video => video.annotations)
+  @ManyToOne(() => Video, (video) => video.annotations)
   video: Video;
 }
 ```
@@ -105,6 +110,7 @@ export class Annotation {
 ## 🔧 Development
 
 ### Prerequisites
+
 - Node.js 18+
 - PostgreSQL 15+
 - Docker (optional)
@@ -112,21 +118,24 @@ export class Annotation {
 ### Installation
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Environment setup**
+
    ```bash
    cp .env.example .env
    # Edit .env with your database configuration
    ```
 
 3. **Database setup**
+
    ```bash
    # Using Docker
    docker-compose up -d postgres
-   
+
    # Or install PostgreSQL locally
    # Create database: video_player
    ```
@@ -240,7 +249,10 @@ mutation CreateAnnotation($createAnnotationInput: CreateAnnotationInput!) {
 }
 
 # Update annotation
-mutation UpdateAnnotation($id: ID!, $updateAnnotationInput: UpdateAnnotationInput!) {
+mutation UpdateAnnotation(
+  $id: ID!
+  $updateAnnotationInput: UpdateAnnotationInput!
+) {
   updateAnnotation(id: $id, updateAnnotationInput: $updateAnnotationInput) {
     id
     title
@@ -286,7 +298,9 @@ input UpdateAnnotationInput {
 ## 🗄️ Database Operations
 
 ### Seeding
+
 The application includes a comprehensive seeding script that creates:
+
 - Sample videos with metadata
 - Annotations with different types and colors
 - Placeholder video files
@@ -296,6 +310,7 @@ npm run seed
 ```
 
 ### Migrations
+
 TypeORM handles database schema automatically in development mode. For production:
 
 ```bash
@@ -312,6 +327,7 @@ npm run typeorm migration:revert
 ## 🔒 Security
 
 ### CORS Configuration
+
 ```typescript
 app.enableCors({
   origin: ['http://localhost:3000', 'http://frontend:3000'],
@@ -320,13 +336,16 @@ app.enableCors({
 ```
 
 ### Input Validation
+
 All inputs are validated using class-validator decorators:
+
 - Required fields validation
 - Type checking
 - Custom validation rules
 - Sanitization
 
 ### File Security
+
 - File type validation
 - Size limits
 - Secure file serving
@@ -335,7 +354,7 @@ All inputs are validated using class-validator decorators:
 ## 📁 Project Structure
 
 ```
-backend/
+backend-nestjs/
 ├── src/
 │   ├── video/                 # Video module
 │   │   ├── dto/              # Data transfer objects
@@ -361,6 +380,7 @@ backend/
 ## 🐳 Docker
 
 ### Development
+
 ```bash
 # Build and run
 docker-compose up -d backend
@@ -373,6 +393,7 @@ docker-compose down
 ```
 
 ### Production
+
 ```bash
 # Build production image
 docker build -t video-player-backend .
@@ -386,12 +407,14 @@ docker run -p 3001:3001 \
 ## 🔍 Monitoring & Logging
 
 ### Logging
+
 - Structured logging with timestamps
 - Different log levels (error, warn, info, debug)
 - Request/response logging
 - Database query logging
 
 ### Health Checks
+
 - Database connection status
 - Service availability
 - Memory usage monitoring
@@ -399,6 +422,7 @@ docker run -p 3001:3001 \
 ## 🚀 Performance
 
 ### Optimizations
+
 - Database connection pooling
 - Query optimization with TypeORM
 - Efficient file streaming
@@ -406,6 +430,7 @@ docker run -p 3001:3001 \
 - Response compression
 
 ### Caching
+
 - Apollo Server caching
 - Database query caching
 - Static file caching
@@ -413,16 +438,19 @@ docker run -p 3001:3001 \
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 npm run test
 ```
 
 ### Integration Tests
+
 ```bash
 npm run test:e2e
 ```
 
 ### Test Coverage
+
 ```bash
 npm run test:cov
 ```
@@ -451,18 +479,21 @@ CORS_ORIGIN=http://localhost:3000
 ## 🚀 Deployment
 
 ### Production Build
+
 ```bash
 npm run build
 npm run start:prod
 ```
 
 ### Docker Production
+
 ```bash
 docker build -t video-player-backend .
 docker run -p 3001:3001 video-player-backend
 ```
 
 ### Environment Setup
+
 1. Set production environment variables
 2. Configure database connection
 3. Set up reverse proxy

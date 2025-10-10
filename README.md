@@ -1,6 +1,38 @@
 # Advanced Video Player
 
-A professional video player application with advanced features including annotations, chapter navigation, and modern UI/UX. Built with Next.js 15, React 19, NestJS, GraphQL, and PostgreSQL.
+A professional video player application with advanced features including annotations, chapter navigation, and modern UI/UX. Built with Next.js 15, React 19, **FastAPI** (default) / NestJS, and PostgreSQL.
+
+> **⚠️ Quick Start**: If you encounter connection errors, the frontend is built for GraphQL. Use `./scripts/switch-backend.sh nestjs` to switch to the NestJS backend which is compatible with the current frontend.
+
+## 🏗️ Architecture
+
+### Backend Options
+
+This project supports **two backend implementations**:
+
+1. **FastAPI (Default)** - Modern Python async framework
+   - **Port**: 8000
+   - **API**: REST API with automatic OpenAPI documentation
+   - **Features**: Video processing, async operations, type safety
+   - **Best for**: Video processing, ML/AI integration, high performance
+
+2. **NestJS** - Enterprise Node.js framework
+   - **Port**: 3001
+   - **API**: GraphQL with Apollo Server
+   - **Features**: Real-time subscriptions, microservices
+   - **Best for**: Real-time features, complex business logic
+
+### Switching Backends
+
+```bash
+# Switch to FastAPI (REST API - requires frontend updates)
+./scripts/switch-backend.sh fastapi
+
+# Switch to NestJS (GraphQL - compatible with current frontend)
+./scripts/switch-backend.sh nestjs
+```
+
+**⚠️ Important Note**: The current frontend is built for GraphQL and works with NestJS. FastAPI provides a REST API, so switching to FastAPI requires frontend modifications or adding GraphQL support to FastAPI.
 
 ## 🚀 Features
 
@@ -22,11 +54,21 @@ A professional video player application with advanced features including annotat
 
 ### Backend Features
 
+#### FastAPI (Default)
+
+- **REST API**: Fast, modern async API with automatic OpenAPI docs
+- **Video Processing**: Built-in video analysis and thumbnail generation
+- **Type Safety**: Pydantic models for data validation
+- **Async Operations**: High-performance async/await support
+- **File Upload**: Efficient video file handling with background processing
+
+#### NestJS (Alternative)
+
 - **GraphQL API**: Type-safe API with introspection
-- **Video Streaming**: Efficient video file serving
+- **Real-time Features**: WebSocket support for live updates
+- **Microservices**: Enterprise-grade architecture
 - **Database Management**: PostgreSQL with TypeORM
 - **File Upload**: Support for video file uploads
-- **Seeding**: Sample data for development
 
 ## 🏗️ Architecture
 
@@ -55,6 +97,17 @@ A professional video player application with advanced features including annotat
 
 ### Backend
 
+#### FastAPI (Default)
+
+- **FastAPI** - Modern Python async framework
+- **SQLAlchemy** - Python SQL toolkit and ORM
+- **Pydantic** - Data validation using Python type hints
+- **PostgreSQL** - Robust relational database
+- **FFmpeg** - Video processing and analysis
+- **Uvicorn** - Lightning-fast ASGI server
+
+#### NestJS (Alternative)
+
 - **NestJS** - Scalable Node.js framework
 - **GraphQL** - Type-safe API with Apollo Server
 - **TypeORM** - Type-safe database ORM
@@ -72,6 +125,7 @@ A professional video player application with advanced features including annotat
 ### Prerequisites
 
 - Node.js 18+
+- Python 3.11+ (for FastAPI backend)
 - Docker and Docker Compose
 - Git
 
@@ -87,27 +141,40 @@ A professional video player application with advanced features including annotat
 2. **Start all services (Docker)**
 
    ```bash
-   # Development mode (recommended)
+   # Development mode (recommended) - Uses FastAPI by default
    ./scripts/start.sh dev
 
-   # Production mode
+   # Production mode - Uses FastAPI by default
    ./scripts/start.sh
+
+   # Note: If you get connection errors, switch to NestJS:
+   ./scripts/switch-backend.sh nestjs
+   ./scripts/stop.sh && ./scripts/start.sh dev
    ```
 
 3. **Seed the database**
 
    ```bash
-   # Using Docker (recommended)
-   ./scripts/seed-docker.sh
+   # For FastAPI backend (default)
+   ./scripts/seed-fastapi.sh
 
-   # Or using npm script
-   npm run seed:docker
+   # For NestJS backend
+   ./scripts/seed-nestjs.sh
+
+   # Or using npm scripts
+   npm run seed:docker        # FastAPI
+   npm run seed:nestjs # NestJS
    ```
 
 4. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend GraphQL: http://localhost:3001/graphql
-   - Database: localhost:5432
+   - **Frontend**: http://localhost:3000
+   - **FastAPI Backend** (default): http://localhost:8000
+     - **API Docs**: http://localhost:8000/docs
+     - **Health Check**: http://localhost:8000/health
+     - **⚠️ Note**: REST API - frontend needs updates to work
+   - **NestJS Backend**: http://localhost:3001/graphql (if switched)
+     - **✅ Note**: GraphQL API - works with current frontend
+   - **Database**: localhost:5432
 
 ### Manual Setup (Alternative)
 
@@ -138,7 +205,7 @@ A professional video player application with advanced features including annotat
 
 ```
 video-player/
-├── backend/                 # NestJS backend
+├── backend-nestjs/          # NestJS backend (alternative)
 │   ├── src/
 │   │   ├── video/          # Video module
 │   │   ├── annotation/     # Annotation module
@@ -146,6 +213,16 @@ video-player/
 │   │   └── main.ts         # Application entry point
 │   ├── Dockerfile
 │   └── package.json
+├── backend-fastapi/         # FastAPI backend (default)
+│   ├── app/
+│   │   ├── api/           # API endpoints
+│   │   ├── core/          # Core configuration
+│   │   ├── models/        # Database models
+│   │   ├── schemas/       # Pydantic schemas
+│   │   ├── services/      # Business logic
+│   │   └── main.py        # Application entry point
+│   ├── Dockerfile
+│   └── requirements.txt
 ├── frontend/               # Next.js frontend
 │   ├── src/
 │   │   ├── app/           # App Router pages
@@ -159,7 +236,9 @@ video-player/
 │   ├── stop.sh           # Stop all services + kill ports
 │   ├── clean.sh          # Clean everything + kill ports
 │   ├── kill-ports.sh     # Kill processes on project ports
-│   ├── seed-docker.sh    # Seed database with sample data
+│   ├── seed-nestjs.sh    # Seed NestJS database
+│   ├── seed-fastapi.sh   # Seed FastAPI database
+│   ├── switch-backend.sh # Switch between backends
 │   ├── setup.sh          # Setup development environment
 │   └── docker-test.sh    # Test Docker setup
 ├── docker-compose.yml    # Docker services
@@ -191,18 +270,63 @@ video-player/
 - Use the annotation list in the sidebar
 - Click the play button next to any annotation
 
+## 🚨 Troubleshooting
+
+### Backend Connection Issues
+
+If you see `ERR_CONNECTION_REFUSED` or similar errors:
+
+1. **Check which backend is running**:
+
+   ```bash
+   docker-compose -f docker-compose.dev.yml ps
+   ```
+
+2. **Switch to NestJS (recommended for current frontend)**:
+
+   ```bash
+   ./scripts/switch-backend.sh nestjs
+   ./scripts/stop.sh && ./scripts/start.sh dev
+   ```
+
+3. **Verify the switch worked**:
+   - Frontend should work at http://localhost:3000
+   - GraphQL playground at http://localhost:3001/graphql
+
+### Backend Compatibility
+
+| Backend     | API Type | Frontend Compatibility         | Status      |
+| ----------- | -------- | ------------------------------ | ----------- |
+| **FastAPI** | REST API | ❌ Needs frontend updates      | Default     |
+| **NestJS**  | GraphQL  | ✅ Works with current frontend | Alternative |
+
+### Quick Fix for Connection Errors
+
+```bash
+# If you get connection errors, use NestJS:
+./scripts/switch-backend.sh nestjs
+./scripts/stop.sh && ./scripts/start.sh dev
+./scripts/seed-nestjs.sh
+```
+
 ## 🔧 Development
 
 ### Available Scripts
 
 ```bash
 # Docker Management
-./scripts/start.sh dev   # Start in development mode (recommended)
-./scripts/start.sh       # Start in production mode
+./scripts/start.sh dev   # Start in development mode (FastAPI default)
+./scripts/start.sh       # Start in production mode (FastAPI default)
 ./scripts/stop.sh        # Stop all services and kill port processes
 ./scripts/clean.sh       # Clean up everything and kill port processes
 ./scripts/kill-ports.sh  # Kill processes on project ports only
 ./scripts/docker-test.sh # Test Docker setup
+
+# Backend Management
+./scripts/switch-backend.sh fastapi  # Switch to FastAPI (REST API)
+./scripts/switch-backend.sh nestjs   # Switch to NestJS (GraphQL - recommended)
+./scripts/seed-fastapi.sh           # Seed FastAPI database
+./scripts/seed-nestjs.sh            # Seed NestJS database
 
 # Manual Development
 npm run dev              # Start both frontend and backend
@@ -261,7 +385,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/graphql
 ./scripts/kill-ports.sh
 
 # Seed database with sample data
-./scripts/seed-docker.sh
+./scripts/seed-nestjs.sh
 
 # View logs
 docker-compose -f docker-compose.dev.yml logs -f
@@ -293,7 +417,7 @@ All scripts now include automatic port cleanup to prevent conflicts:
 | `stop.sh`        | Stop services              | ✅           | ❌             |
 | `clean.sh`       | Clean everything           | ✅           | ✅             |
 | `kill-ports.sh`  | Kill port processes only   | ✅           | ❌             |
-| `seed-docker.sh` | Seed database              | ❌           | ❌             |
+| `seed-nestjs.sh` | Seed database              | ❌           | ❌             |
 
 #### **Usage Examples**
 
@@ -302,7 +426,7 @@ All scripts now include automatic port cleanup to prevent conflicts:
 ./scripts/start.sh dev
 
 # Seed with sample data
-./scripts/seed-docker.sh
+./scripts/seed-nestjs.sh
 
 # Stop and clean up
 ./scripts/stop.sh
@@ -537,7 +661,7 @@ If database seeding fails:
 
 3. **Run seed script:**
    ```bash
-   ./scripts/seed-docker.sh
+   ./scripts/seed-nestjs.sh
    ```
 
 ### Complete Reset
@@ -552,5 +676,5 @@ To completely reset the project:
 ./scripts/start.sh dev
 
 # Seed with sample data
-./scripts/seed-docker.sh
+./scripts/seed-nestjs.sh
 ```
