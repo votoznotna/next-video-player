@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: video-player-db
+    environment:
+      POSTGRES_DB: video_player
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - video-player-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: video-player-backend
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/video_player
+      NODE_ENV: development
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./videos:/app/videos
+    depends_on:
+      - postgres
+    networks:
+      - video-player-network
+    command: npm run start:dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: video-player-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001/graphql
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - video-player-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  video-player-network:
+    driver: bridge

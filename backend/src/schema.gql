@@ -1,0 +1,88 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Annotation {
+  color: String!
+  createdAt: DateTime!
+  description: String
+  endTime: Float!
+  id: ID!
+  isActive: Boolean!
+  startTime: Float!
+  title: String!
+  type: String!
+  updatedAt: DateTime!
+  video: Video!
+}
+
+input CreateAnnotationInput {
+  color: String! = "#3B82F6"
+  description: String
+  endTime: Float!
+  isActive: Boolean! = true
+  startTime: Float!
+  title: String!
+  type: String! = "chapter"
+  videoId: String!
+}
+
+input CreateVideoInput {
+  description: String
+  duration: Float!
+  filename: String!
+  isActive: Boolean! = true
+  mimeType: String!
+  originalName: String!
+  size: Float!
+  title: String!
+  views: Float! = 0
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createAnnotation(createAnnotationInput: CreateAnnotationInput!): Annotation!
+  createVideo(createVideoInput: CreateVideoInput!): Video!
+  removeAnnotation(id: ID!): Boolean!
+  removeVideo(id: ID!): Boolean!
+  updateAnnotation(id: ID!, updateAnnotationInput: UpdateAnnotationInput!): Annotation!
+}
+
+type Query {
+  annotation(id: ID!): Annotation!
+  annotations: [Annotation!]!
+  annotationsByVideo(videoId: ID!): [Annotation!]!
+  video(id: ID!): Video!
+  videos: [Video!]!
+}
+
+input UpdateAnnotationInput {
+  color: String = "#3B82F6"
+  description: String
+  endTime: Float
+  isActive: Boolean = true
+  startTime: Float
+  title: String
+  type: String = "chapter"
+  videoId: String
+}
+
+type Video {
+  annotations: [Annotation!]
+  createdAt: DateTime!
+  description: String
+  duration: Float!
+  filename: String!
+  id: ID!
+  isActive: Boolean!
+  mimeType: String!
+  originalName: String!
+  size: Float!
+  title: String!
+  updatedAt: DateTime!
+  views: Float!
+}

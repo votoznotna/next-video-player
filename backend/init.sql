@@ -1,0 +1,3 @@
+-- Initialize the database
+-- Note: The database is already created by the POSTGRES_DB environment variable
+-- This file is kept for any additional initialization if needed
