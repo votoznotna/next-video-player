@@ -2,8 +2,6 @@
 
 A professional video player application with advanced features including annotations, chapter navigation, and modern UI/UX. Built with Next.js 15, React 19, **FastAPI** (default) / NestJS, and PostgreSQL.
 
-> **⚠️ Quick Start**: If you encounter connection errors, the frontend is built for GraphQL. Use `./scripts/switch-backend.sh nestjs` to switch to the NestJS backend which is compatible with the current frontend.
-
 ## 🏗️ Architecture
 
 ### Backend Options
@@ -11,6 +9,7 @@ A professional video player application with advanced features including annotat
 This project supports **two backend implementations**:
 
 1. **FastAPI (Default)** - Modern Python async framework
+
    - **Port**: 8000
    - **API**: REST API with automatic OpenAPI documentation
    - **Features**: Video processing, async operations, type safety
