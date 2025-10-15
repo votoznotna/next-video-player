@@ -466,7 +466,7 @@ cd frontend
 npm install
 ```
 
-All errors will disappear after installation. See `LINT_ERRORS_EXPLAINED.md` for details.
+All errors will disappear after installation.
 
 ### Port Conflicts
 
@@ -540,10 +540,7 @@ Comprehensive documentation is available in the project root:
 - **QUICK_START.md** - Get started in 3 steps
 - **INSIDER_THREAT_VIDEO_LIBRARY_SPEC.md** - Complete functional specification
 - **IMPLEMENTATION_GUIDE.md** - Technical implementation details
-- **MIGRATION_SUMMARY.md** - What changed from the old system
-- **PHASE_1_CHECKLIST.md** - Task tracking and testing checklist
-- **COMPLETION_SUMMARY.md** - Project transformation overview
-- **LINT_ERRORS_EXPLAINED.md** - Why you see TypeScript errors (and how to fix)
+- **VIDEO_STORAGE_GUIDE.md** - Best practices for video storage and scaling
 
 ## 🆘 Support
 
