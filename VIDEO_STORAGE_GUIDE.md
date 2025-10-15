@@ -7,8 +7,9 @@ This guide provides recommendations for storing video files in development and p
 ## Current Implementation
 
 **Storage:** Local filesystem (`/videos/` directory)  
-**Metadata:** PostgreSQL database  
-**Serving:** Static file serving via NestJS/FastAPI  
+**Metadata:** PostgreSQL 15 database  
+**Backend:** FastAPI with Strawberry GraphQL  
+**Serving:** Static file serving via FastAPI  
 **Status:** ✅ Good for development and small-scale deployments
 
 ## Why NOT to Store Videos in Databases
@@ -213,8 +214,7 @@ Streaming: Platform-provided URLs
 ```bash
 # 1. Add MinIO to docker-compose.yml
 # 2. Install MinIO client library
-npm install minio  # Node.js
-pip install minio  # Python
+pip install minio  # Python (for FastAPI backend)
 
 # 3. Update backend to upload to MinIO
 # 4. Generate pre-signed URLs for streaming
@@ -233,19 +233,19 @@ Option C: Use video platform service
 
 ### Current Implementation (Filesystem)
 
-**Backend (NestJS):**
+**Backend (FastAPI):**
 
-```typescript
-// Serve static files
-app.useStaticAssets(join(__dirname, '..', 'videos'), {
-  prefix: '/videos/',
-});
+```python
+from fastapi.staticfiles import StaticFiles
+
+# Serve static video files
+app.mount("/videos", StaticFiles(directory="videos"), name="videos")
 ```
 
 **Frontend:**
 
 ```typescript
-<video src={`http://localhost:3001/videos/${video.filename}`} />
+<video src={`http://localhost:8000/videos/${video.filename}`} />
 ```
 
 ### Recommended: MinIO Implementation
@@ -273,41 +273,6 @@ services:
 
 volumes:
   minio_data:
-```
-
-**Backend (NestJS):**
-
-```typescript
-import * as Minio from 'minio';
-
-const minioClient = new Minio.Client({
-  endPoint: 'localhost',
-  port: 9000,
-  useSSL: false,
-  accessKey: 'admin',
-  secretKey: 'your-secure-password',
-});
-
-// Upload video
-async uploadVideo(file: Express.Multer.File) {
-  const bucketName = 'videos';
-  const fileName = `${Date.now()}-${file.originalname}`;
-
-  await minioClient.putObject(
-    bucketName,
-    fileName,
-    file.buffer,
-    file.size,
-    { 'Content-Type': file.mimetype }
-  );
-
-  return fileName;
-}
-
-// Generate pre-signed URL (expires in 1 hour)
-async getVideoUrl(fileName: string) {
-  return await minioClient.presignedGetObject('videos', fileName, 3600);
-}
 ```
 
 **Backend (FastAPI):**
@@ -348,7 +313,7 @@ def get_video_url(file_name: str):
     )
 ```
 
-**Frontend:**
+**Frontend (React with Apollo Client):**
 
 ```typescript
 // Fetch video with pre-signed URL
@@ -357,72 +322,72 @@ const { data } = await apolloClient.query({
   variables: { id: videoId },
 });
 
-// Use the pre-signed URL
-<video src={data.video.streamUrl} />;
+// Use the pre-signed URL in video player
+<video src={data.video.fileUrl} controls />;
 ```
 
 ### AWS S3 Implementation
 
-**Backend (NestJS):**
+**Backend (FastAPI):**
 
-```typescript
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+```python
+import boto3
+from botocore.config import Config
+from datetime import timedelta
 
-const s3Client = new S3Client({
-  region: 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
+s3_client = boto3.client(
+    's3',
+    region_name='us-east-1',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    config=Config(signature_version='s3v4')
+)
 
-// Upload video
-async uploadVideo(file: Express.Multer.File) {
-  const key = `videos/${Date.now()}-${file.originalname}`;
+# Upload video
+async def upload_video(file: UploadFile):
+    key = f"videos/{int(time.time())}-{file.filename}"
 
-  await s3Client.send(new PutObjectCommand({
-    Bucket: 'your-bucket-name',
-    Key: key,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  }));
+    s3_client.upload_fileobj(
+        file.file,
+        'your-bucket-name',
+        key,
+        ExtraArgs={'ContentType': file.content_type}
+    )
 
-  return key;
-}
+    return key
 
-// Generate pre-signed URL
-async getVideoUrl(key: string) {
-  const command = new GetObjectCommand({
-    Bucket: 'your-bucket-name',
-    Key: key,
-  });
-
-  return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-}
+# Generate pre-signed URL
+def get_video_url(key: str):
+    return s3_client.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': 'your-bucket-name', 'Key': key},
+        ExpiresIn=3600
+    )
 ```
 
-## Database Schema (Keep Current)
+## Database Schema (Current Implementation)
 
-Your PostgreSQL schema is perfect - keep storing only metadata:
+Your PostgreSQL schema stores only metadata (perfect approach):
 
 ```sql
 CREATE TABLE videos (
   id UUID PRIMARY KEY,
-  title VARCHAR NOT NULL,
+  title VARCHAR(255) NOT NULL,
   description TEXT,
-  filename VARCHAR NOT NULL,           -- S3 key or MinIO object name
-  storage_provider VARCHAR DEFAULT 'local',  -- 'local', 'minio', 's3', 'cloudflare'
-  storage_url TEXT,                    -- Full URL or path
-  original_name VARCHAR NOT NULL,
-  mime_type VARCHAR NOT NULL,
-  size BIGINT NOT NULL,
-  duration FLOAT NOT NULL,
-  views BIGINT DEFAULT 0,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  filename VARCHAR(255) NOT NULL,        -- Local filename or S3 key
+  "originalName" VARCHAR(255) NOT NULL,  -- Original uploaded filename
+  "mimeType" VARCHAR(100) NOT NULL,      -- video/mp4, etc.
+  size INTEGER NOT NULL,                 -- File size in bytes
+  duration FLOAT NOT NULL,               -- Duration in seconds
+  views INTEGER DEFAULT 0,
+  "isActive" BOOLEAN DEFAULT true,
+  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- For future: Add storage provider field when migrating to MinIO/S3
+-- ALTER TABLE videos ADD COLUMN storage_provider VARCHAR(50) DEFAULT 'local';
+-- ALTER TABLE videos ADD COLUMN storage_url TEXT;
 ```
 
 ## Security Considerations
@@ -435,16 +400,16 @@ CREATE TABLE videos (
 
 ### Access Control
 
-```typescript
-// Example: Generate URL only for authenticated users
-async getVideoUrl(videoId: string, userId: string) {
-  // Check if user has access
-  const hasAccess = await this.checkUserAccess(userId, videoId);
-  if (!hasAccess) throw new UnauthorizedException();
+```python
+# Example: Generate URL only for authenticated users
+async def get_video_url(video_id: str, user_id: str):
+    # Check if user has access
+    has_access = await check_user_access(user_id, video_id)
+    if not has_access:
+        raise HTTPException(status_code=403, detail="Access denied")
 
-  // Generate pre-signed URL
-  return await this.generatePresignedUrl(videoId);
-}
+    # Generate pre-signed URL
+    return await generate_presigned_url(video_id)
 ```
 
 ### Content Delivery
@@ -509,12 +474,42 @@ async getVideoUrl(videoId: string, userId: string) {
 ### Action Items
 
 1. **Now:** Continue with filesystem for development ✅
+
+   - Current setup: FastAPI + PostgreSQL + local `/videos/` directory
+   - Works perfectly for development and testing
+
 2. **Before Production:** Add MinIO to docker-compose
+
+   - Add MinIO service to `docker-compose.yml`
+   - Install `minio` Python package in `requirements.txt`
+
 3. **Update Backend:** Add MinIO upload/download logic
-4. **Update Database:** Add `storage_provider` field
+
+   - Create MinIO client in FastAPI
+   - Add upload endpoint for video files
+   - Generate pre-signed URLs in GraphQL resolvers
+
+4. **Update Database:** Add storage provider fields
+
+   - `ALTER TABLE videos ADD COLUMN storage_provider VARCHAR(50) DEFAULT 'local';`
+   - `ALTER TABLE videos ADD COLUMN storage_url TEXT;`
+
 5. **Test:** Verify video streaming works with pre-signed URLs
+
+   - Upload test video to MinIO
+   - Verify GraphQL returns correct URL
+   - Test video playback in frontend
+
 6. **Deploy:** Use MinIO for production
+
+   - Configure MinIO with persistent volumes
+   - Set up backup strategy
+   - Monitor storage usage
+
 7. **Later:** Migrate to AWS S3 when needed
+   - When scaling beyond single server
+   - When need global CDN distribution
+   - When need advanced features
 
 ## Additional Resources
 

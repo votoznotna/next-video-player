@@ -1,27 +1,23 @@
 {
-  "name": "video-player-monorepo",
+  "name": "insider-threat-video-analyzer",
   "version": "1.0.0",
-  "description": "Advanced video player with annotations and chapter navigation",
+  "description": "React video analysis library for insider threat detection with FastAPI backend",
   "private": true,
   "workspaces": [
-    "frontend",
-    "backend-nestjs"
+    "frontend"
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend-nestjs && npm run start:dev",
-    "build": "npm run build:backend && npm run build:frontend",
+    "dev:backend": "cd backend-fastapi && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "build": "npm run build:frontend",
     "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend-nestjs && npm run build",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down -v",
-    "docker:clean": "docker-compose down -v && docker system prune -f",
-    "setup": "npm install && cd frontend && npm install && cd ../backend-nestjs && npm install",
-    "seed": "cd backend-nestjs && npm run seed",
-    "seed:js": "cd backend-nestjs && npm run seed:js",
-    "seed:docker": "docker-compose -f docker-compose.dev.yml exec backend python seed.py",
-    "seed:nestjs": "docker-compose -f docker-compose.dev.yml exec backend-nestjs sh -c 'cd /app && npm run seed'"
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:clean": "docker-compose -f docker-compose.dev.yml down -v && docker system prune -f",
+    "setup": "npm install && cd frontend && npm install && cd ../backend-fastapi && pip install -r requirements.txt",
+    "seed": "cd backend-fastapi && python seed.py",
+    "seed:docker": "docker-compose -f docker-compose.dev.yml exec backend python seed.py"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

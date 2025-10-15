@@ -1,67 +1,55 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: video-player-db-dev
+    container_name: insider-threat-db-dev
     environment:
-      POSTGRES_DB: video_player
+      POSTGRES_DB: insider_threat
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
-      - ./backend-nestjs/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - video-player-network
+      - insider-threat-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
-      context: ./backend-nestjs
-      dockerfile: Dockerfile.dev
-    container_name: video-player-backend-dev
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/video_player
-      NODE_ENV: development
-    ports:
-      - '3001:3001'
-    volumes:
-      - ./backend-nestjs:/app
-      - /app/node_modules
-      - ./videos:/app/videos
-    depends_on:
-      - postgres
-    networks:
-      - video-player-network
-    command: npm run start:dev
-
-  backend-fastapi:
-    build:
       context: ./backend-fastapi
       dockerfile: Dockerfile.dev
-    container_name: video-player-backend-fastapi-dev
+    container_name: insider-threat-backend-dev
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:password@postgres:5432/video_player
+      DATABASE_URL: postgresql+asyncpg://postgres:password@postgres:5432/insider_threat
+      ENVIRONMENT: development
+      CORS_ORIGINS: http://localhost:3000
     ports:
-      - '8000:8000'
+      - "8000:8000"
     volumes:
       - ./backend-fastapi:/app
       - ./videos:/app/videos
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
-      - video-player-network
+      - insider-threat-network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: video-player-frontend-dev
+    container_name: insider-threat-frontend-dev
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3001/graphql
+      NEXT_PUBLIC_API_URL: http://localhost:8000/graphql
+      NEXT_PUBLIC_VIDEO_URL: http://localhost:8000
       NODE_ENV: development
     ports:
-      - '3000:3000'
+      - "3000:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -69,12 +57,12 @@ services:
     depends_on:
       - backend
     networks:
-      - video-player-network
+      - insider-threat-network
     command: npm run dev
 
 volumes:
   postgres_data_dev:
 
 networks:
-  video-player-network:
+  insider-threat-network:
     driver: bridge

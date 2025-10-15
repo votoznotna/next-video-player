@@ -15,6 +15,8 @@ from pathlib import Path
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.api_v1.api import api_router
+from app.graphql.schema import schema
+from strawberry.fastapi import GraphQLRouter
 
 
 @asynccontextmanager
@@ -58,6 +60,10 @@ app.add_middleware(
 
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# GraphQL endpoint
+graphql_app = GraphQLRouter(schema)
+app.include_router(graphql_app, prefix="/graphql")
 
 # Serve static video files
 app.mount("/videos", StaticFiles(directory="videos"), name="videos")

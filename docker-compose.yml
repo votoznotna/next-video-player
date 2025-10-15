@@ -1,78 +1,54 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: video-player-db
+    container_name: insider-threat-db
     environment:
-      POSTGRES_DB: video_player
+      POSTGRES_DB: insider_threat
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend-nestjs/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - video-player-network
+      - insider-threat-network
 
   backend:
     build:
-      context: ./backend
+      context: ./backend-fastapi
       dockerfile: Dockerfile
-    container_name: video-player-backend
+    container_name: insider-threat-backend
     environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/video_player
-      NODE_ENV: production
+      DATABASE_URL: postgresql+asyncpg://postgres:password@postgres:5432/insider_threat
+      ENVIRONMENT: production
+      CORS_ORIGINS: http://localhost:3000
     ports:
-      - '3001:3001'
+      - "8000:8000"
     volumes:
-      - ./backend-fastapi:/app
       - ./videos:/app/videos
     depends_on:
       - postgres
     networks:
-      - video-player-network
-
-  backend-nestjs:
-    build:
-      context: ./backend-nestjs
-      dockerfile: Dockerfile
-    container_name: video-player-backend-nestjs
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/video_player
-      NODE_ENV: production
-    ports:
-      - '3001:3001'
-    volumes:
-      - ./backend-nestjs:/app
-      - /app/node_modules
-      - ./videos:/app/videos
-    depends_on:
-      - postgres
-    networks:
-      - video-player-network
+      - insider-threat-network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: video-player-frontend
+    container_name: insider-threat-frontend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3001/graphql
+      NEXT_PUBLIC_API_URL: http://localhost:8000/graphql
+      NEXT_PUBLIC_VIDEO_URL: http://localhost:8000
     ports:
-      - '3000:3000'
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
+      - "3000:3000"
     depends_on:
       - backend
     networks:
-      - video-player-network
-    command: npm run dev
+      - insider-threat-network
 
 volumes:
   postgres_data:
 
 networks:
-  video-player-network:
+  insider-threat-network:
     driver: bridge

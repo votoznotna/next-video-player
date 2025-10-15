@@ -11,22 +11,13 @@ else
     echo "   ℹ️  No processes running on port 3000"
 fi
 
-# Kill processes on port 8000 (FastAPI Backend)
+# Kill processes on port 8000 (Backend)
 if lsof -ti:8000 > /dev/null 2>&1; then
-    echo "   Killing processes on port 8000 (FastAPI Backend)..."
+    echo "   Killing processes on port 8000 (Backend)..."
     lsof -ti:8000 | xargs kill -9 2>/dev/null || true
     echo "   ✅ Port 8000 cleared"
 else
     echo "   ℹ️  No processes running on port 8000"
-fi
-
-# Kill processes on port 3001 (NestJS Backend)
-if lsof -ti:3001 > /dev/null 2>&1; then
-    echo "   Killing processes on port 3001 (NestJS Backend)..."
-    lsof -ti:3001 | xargs kill -9 2>/dev/null || true
-    echo "   ✅ Port 3001 cleared"
-else
-    echo "   ℹ️  No processes running on port 3001"
 fi
 
 # Kill processes on port 5432 (PostgreSQL)

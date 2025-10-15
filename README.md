@@ -1,132 +1,58 @@
-# Advanced Video Player
+# Insider Threat Video Analyzer
 
-A professional video player application with advanced features including annotations, chapter navigation, and modern UI/UX. Built with Next.js 15, React 19, **FastAPI** (default) / NestJS, and PostgreSQL.
+A professional React 19 video analysis library designed for security analysts investigating insider threats. Features frame-accurate navigation, high-speed playback, incident annotation, and evidence export capabilities.
 
-## 🏗️ Architecture
+## 🎯 Key Features
 
-### Backend Options
+### For Security Analysts
 
-This project supports **two backend implementations**:
+- **High-Speed Playback:** 0.25x to 8x speed for rapid video review (10 speed options)
+- **Frame-Accurate Navigation:** Precise incident marking (±1 frame precision)
+- **30+ Keyboard Shortcuts:** Keyboard-first workflow for maximum efficiency
+- **Speed & Frame Indicators:** Real-time display of playback speed and frame number
+- **Keyboard Help Overlay:** Press `?` to see all available shortcuts
+- **Incident Annotation System:** 5 threat categories (Critical, Suspicious, Policy Violation, Note, Evidence)
+- **Timeline Visualization:** Visual timeline with color-coded incident markers
+- **Evidence Export:** Extract clips with watermarks for reports (Phase 4)
+- **Multi-Video Comparison:** Side-by-side analysis (Phase 5)
 
-1. **FastAPI (Default)** - Modern Python async framework
+### Technical Stack
 
-   - **Port**: 8000
-   - **API**: REST API with automatic OpenAPI documentation
-   - **Features**: Video processing, async operations, type safety
-   - **Best for**: Video processing, ML/AI integration, high performance
-
-2. **NestJS** - Enterprise Node.js framework
-   - **Port**: 3001
-   - **API**: GraphQL with Apollo Server
-   - **Features**: Real-time subscriptions, microservices
-   - **Best for**: Real-time features, complex business logic
-
-### Switching Backends
-
-```bash
-# Switch to FastAPI (REST API - requires frontend updates)
-./scripts/switch-backend.sh fastapi
-
-# Switch to NestJS (GraphQL - compatible with current frontend)
-./scripts/switch-backend.sh nestjs
-```
-
-**⚠️ Important Note**: The current frontend is built for GraphQL and works with NestJS. FastAPI provides a REST API, so switching to FastAPI requires frontend modifications or adding GraphQL support to FastAPI.
-
-## 🚀 Features
-
-### Video Player
-
-- **Advanced Controls**: Play/pause, seek, volume control, fullscreen
-- **Chapter Navigation**: Click on annotations to jump to specific sections
-- **Progress Visualization**: Visual markers for annotations on the progress bar
-- **Keyboard Shortcuts**: Space for play/pause, arrow keys for seeking
-- **Responsive Design**: Works on desktop and mobile devices
-
-### Annotation System
-
-- **Chapter Markers**: Create clickable chapters with custom colors
-- **Time-based Navigation**: Jump to specific timestamps
-- **Visual Indicators**: Color-coded annotations on the progress bar
-- **Real-time Updates**: See current position within annotations
-- **CRUD Operations**: Create, read, update, and delete annotations
-
-### Backend Features
-
-#### FastAPI (Default)
-
-- **REST API**: Fast, modern async API with automatic OpenAPI docs
-- **Video Processing**: Built-in video analysis and thumbnail generation
-- **Type Safety**: Pydantic models for data validation
-- **Async Operations**: High-performance async/await support
-- **File Upload**: Efficient video file handling with background processing
-
-#### NestJS (Alternative)
-
-- **GraphQL API**: Type-safe API with introspection
-- **Real-time Features**: WebSocket support for live updates
-- **Microservices**: Enterprise-grade architecture
-- **Database Management**: PostgreSQL with TypeORM
-- **File Upload**: Support for video file uploads
+- **Frontend:** React 19 + Next.js 15 + TypeScript + Zustand
+- **UI Components:** Radix UI (accessible, headless components)
+- **Backend:** FastAPI + Strawberry GraphQL
+- **Database:** PostgreSQL 15
+- **Containerization:** Docker + Docker Compose
+- **State Management:** Zustand (lightweight, no boilerplate)
 
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend       │    │   Database      │
-│   (Next.js)     │◄──►│   (NestJS)      │◄──►│   (PostgreSQL)  │
-│                 │    │                 │    │                 │
-│ • React         │    │ • GraphQL       │    │ • Videos        │
-│ • Apollo Client │    │ • TypeORM       │    │ • Annotations   │
-│ • Tailwind CSS  │    │ • File Serving  │    │ • Relations     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│   Frontend (Next.js 15 + React 19)                      │
+│   ├── Enhanced VideoPlayer Component                    │
+│   ├── Timeline with Canvas Rendering                    │
+│   ├── Annotation Management                             │
+│   └── Keyboard Shortcut System                          │
+└─────────────────────────────────────────────────────────┘
+                            ↓ GraphQL
+┌─────────────────────────────────────────────────────────┐
+│   Backend (FastAPI + Strawberry GraphQL)                │
+│   ├── Video Management API                              │
+│   ├── Annotation CRUD Operations                        │
+│   ├── Export Service                                    │
+│   └── PostgreSQL Database                               │
+└─────────────────────────────────────────────────────────┘
 ```
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- **Next.js 15** - React framework with App Router
-- **React 19** - Latest React with improved performance
-- **TypeScript** - Type safety and better DX
-- **Apollo Client** - GraphQL client with caching
-- **Tailwind CSS** - Utility-first CSS framework
-- **Lucide React** - Beautiful icons
-- **Framer Motion** - Smooth animations
-
-### Backend
-
-#### FastAPI (Default)
-
-- **FastAPI** - Modern Python async framework
-- **SQLAlchemy** - Python SQL toolkit and ORM
-- **Pydantic** - Data validation using Python type hints
-- **PostgreSQL** - Robust relational database
-- **FFmpeg** - Video processing and analysis
-- **Uvicorn** - Lightning-fast ASGI server
-
-#### NestJS (Alternative)
-
-- **NestJS** - Scalable Node.js framework
-- **GraphQL** - Type-safe API with Apollo Server
-- **TypeORM** - Type-safe database ORM
-- **PostgreSQL** - Robust relational database
-- **Multer** - File upload handling
-
-### DevOps
-
-- **Docker** - Containerization
-- **Docker Compose** - Multi-service orchestration
-- **Scripts** - Automated setup and management
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- Python 3.11+ (for FastAPI backend)
 - Docker and Docker Compose
-- Git
+- Node.js 18+ (for local development)
+- Python 3.11+ (for local backend development)
+- Python 3.11+ (for local development)
 
 ### Installation
 
@@ -134,46 +60,52 @@ This project supports **two backend implementations**:
 
    ```bash
    git clone <repository-url>
-   cd video-player
+   cd insider-threat-video-analyzer
    ```
 
-2. **Start all services (Docker)**
+2. **Install frontend dependencies**
 
    ```bash
-   # Development mode (recommended) - Uses FastAPI by default
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+   **Important:** This installs the new dependencies for the enhanced video player:
+
+   - `zustand` - State management
+   - `@radix-ui/*` - UI components
+   - `date-fns` - Time utilities
+
+3. **Start all services (Docker - Recommended)**
+
+   ```bash
    ./scripts/start.sh dev
-
-   # Production mode - Uses FastAPI by default
-   ./scripts/start.sh
-
-   # Note: If you get connection errors, switch to NestJS:
-   ./scripts/switch-backend.sh nestjs
-   ./scripts/stop.sh && ./scripts/start.sh dev
    ```
 
-3. **Seed the database**
+   Wait ~15 seconds for services to initialize.
+
+4. **Seed the database with sample data**
 
    ```bash
-   # For FastAPI backend (default)
-   ./scripts/seed-fastapi.sh
-
-   # For NestJS backend
-   ./scripts/seed-nestjs.sh
-
-   # Or using npm scripts
-   npm run seed:docker        # FastAPI
-   npm run seed:nestjs # NestJS
+   ./scripts/seed.sh
    ```
 
-4. **Access the application**
-   - **Frontend**: http://localhost:3000
-   - **FastAPI Backend** (default): http://localhost:8000
-     - **API Docs**: http://localhost:8000/docs
-     - **Health Check**: http://localhost:8000/health
-     - **⚠️ Note**: REST API - frontend needs updates to work
-   - **NestJS Backend**: http://localhost:3001/graphql (if switched)
-     - **✅ Note**: GraphQL API - works with current frontend
-   - **Database**: localhost:5432
+   **Note:** The database is automatically created by Docker when the postgres container starts for the first time.
+
+5. **Access the application**
+
+   - **Frontend:** http://localhost:3000
+   - **Backend API:** http://localhost:8000
+   - **GraphQL Playground:** http://localhost:8000/graphql
+   - **API Docs:** http://localhost:8000/docs
+   - **Database:** localhost:5432
+
+6. **Test the enhanced player**
+   - Open a video
+   - Press `?` to see all keyboard shortcuts
+   - Try different playback speeds with `[` and `]`
+   - Use `,` and `.` for frame-by-frame navigation
 
 ### Manual Setup (Alternative)
 
@@ -186,127 +118,188 @@ This project supports **two backend implementations**:
 2. **Start database**
 
    ```bash
-   docker-compose up -d postgres
+   docker-compose -f docker-compose.dev.yml up -d postgres
    ```
 
 3. **Start backend**
 
    ```bash
-   npm run dev:backend
+   cd backend-fastapi
+   pip install -r requirements.txt
+   uvicorn app.main:app --reload
    ```
 
 4. **Start frontend**
    ```bash
-   npm run dev:frontend
+   cd frontend
+   npm install
+   npm run dev
    ```
 
 ## 📁 Project Structure
 
 ```
-video-player/
-├── backend-nestjs/          # NestJS backend (alternative)
+insider-threat-video-analyzer/
+├── frontend/                 # Next.js 15 application
 │   ├── src/
-│   │   ├── video/          # Video module
-│   │   ├── annotation/     # Annotation module
-│   │   ├── app.module.ts   # Main app module
-│   │   └── main.ts         # Application entry point
-│   ├── Dockerfile
+│   │   ├── app/             # App Router pages
+│   │   ├── components/      # React components
+│   │   │   ├── VideoPlayer.tsx (legacy)
+│   │   │   ├── EnhancedVideoPlayer.tsx (new)
+│   │   │   └── VideoCard.tsx
+│   │   ├── hooks/          # Custom React hooks
+│   │   │   └── useKeyboardShortcuts.ts
+│   │   ├── store/          # Zustand stores
+│   │   │   └── videoPlayerStore.ts
+│   │   ├── lib/            # Utilities
+│   │   └── types/          # TypeScript types
 │   └── package.json
-├── backend-fastapi/         # FastAPI backend (default)
+├── backend-fastapi/         # FastAPI backend
 │   ├── app/
-│   │   ├── api/           # API endpoints
-│   │   ├── core/          # Core configuration
-│   │   ├── models/        # Database models
-│   │   ├── schemas/       # Pydantic schemas
-│   │   ├── services/      # Business logic
-│   │   └── main.py        # Application entry point
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/               # Next.js frontend
-│   ├── src/
-│   │   ├── app/           # App Router pages
-│   │   ├── components/    # React components
-│   │   ├── lib/          # Utilities and config
-│   │   └── types/        # TypeScript types
-│   ├── Dockerfile
-│   └── package.json
-├── scripts/               # Management scripts
-│   ├── start.sh          # Start all services
-│   ├── stop.sh           # Stop all services + kill ports
-│   ├── clean.sh          # Clean everything + kill ports
-│   ├── kill-ports.sh     # Kill processes on project ports
-│   ├── seed-nestjs.sh    # Seed NestJS database
-│   ├── seed-fastapi.sh   # Seed FastAPI database
-│   ├── switch-backend.sh # Switch between backends
-│   ├── setup.sh          # Setup development environment
-│   └── docker-test.sh    # Test Docker setup
-├── docker-compose.yml    # Docker services
+│   │   ├── api/            # GraphQL resolvers
+│   │   ├── models/         # Database models
+│   │   ├── schemas/        # Pydantic schemas
+│   │   └── main.py         # Application entry
+│   ├── requirements.txt
+│   └── seed.py             # Database seeding
+├── scripts/                # Management scripts
+│   ├── start.sh           # Start all services
+│   ├── stop.sh            # Stop all services
+│   ├── seed.sh            # Seed database
+│   └── clean.sh           # Clean everything
+├── videos/                 # Video storage
+├── docker-compose.dev.yml  # Development config
+├── docker-compose.yml      # Production config
 └── README.md
 ```
 
 ## 🎮 Usage
 
-### Video Player Controls
+### Enhanced Video Player
 
-- **Space** - Play/Pause
-- **Left/Right Arrow** - Seek backward/forward 10 seconds
-- **Up/Down Arrow** - Volume up/down
-- **F** - Toggle fullscreen
-- **M** - Mute/unmute
+The application now features an enhanced video player optimized for insider threat analysis:
+
+**Key Features:**
+
+- 10 playback speeds (0.25x, 0.5x, 0.75x, 1x, 1.25x, 1.5x, 1.75x, 2x, 4x, 8x)
+- Frame-by-frame navigation (forward/backward)
+- Real-time speed and frame indicators
+- Interactive keyboard help (press `?`)
+- Auto-hide controls
+- Annotation markers on timeline
+- Go to timestamp dialog
+
+### Keyboard Shortcuts
+
+**Press `?` in the video player to see all shortcuts!**
+
+**Playback Control:**
+
+- `Space` or `K` - Play/Pause
+- `J` - Rewind 10 seconds
+- `L` - Forward 10 seconds
+- `←` - Seek backward 5 seconds
+- `→` - Seek forward 5 seconds
+- `Shift + ←` - Seek backward 30 seconds
+- `Shift + →` - Seek forward 30 seconds
+- `Home` - Jump to start
+- `End` - Jump to end
+
+**Speed Control:**
+
+- `[` - Decrease speed
+- `]` - Increase speed
+- Click speed indicator to select from menu
+
+**Frame Control:**
+
+- `,` (comma) - Previous frame
+- `.` (period) - Next frame
+
+**Volume:**
+
+- `↑` - Volume up
+- `↓` - Volume down
+- `M` - Mute/Unmute
+
+**View:**
+
+- `F` - Fullscreen
+- `G` - Go to timestamp (opens dialog)
+- `?` - Show keyboard shortcuts help
+
+**Annotations:**
+
+- `Shift + M` - Mark current position (opens dialog)
+- `1` - Quick mark: Critical Incident
+- `2` - Quick mark: Suspicious Activity
+- `3` - Quick mark: Policy Violation
+- `4` - Quick mark: Note
+- `5` - Quick mark: Evidence Marker
+
+## 📊 Implementation Status
+
+### ✅ Phase 1: Core Enhancements (COMPLETE)
+
+- ✅ Enhanced video player with 10 playback speeds
+- ✅ Frame-by-frame navigation (±1 frame precision)
+- ✅ 30+ keyboard shortcuts
+- ✅ Speed and frame indicators
+- ✅ Keyboard help overlay
+- ✅ Zustand state management
+- ✅ Auto-hide controls
+- ✅ Annotation markers on timeline
+
+### 🔄 Phase 2: Annotation System (Next)
+
+- ⏳ Annotation dialog component
+- ⏳ Annotation panel with filtering
+- ⏳ GraphQL integration for CRUD
+- ⏳ Annotation search functionality
+
+### 📋 Phase 3: Timeline Enhancement (Planned)
+
+- ⏳ Canvas-based timeline with Konva
+- ⏳ Zoom functionality (10 levels)
+- ⏳ Thumbnail preview on hover
+- ⏳ Heatmap visualization
+
+### 📋 Phase 4: Export Functionality (Planned)
+
+- ⏳ Export dialog component
+- ⏳ FFmpeg integration
+- ⏳ Progress tracking
+- ⏳ Watermarking support
+
+### 📋 Phase 5: Multi-Video Support (Planned)
+
+- ⏳ Grid layout (2x2, 2x1)
+- ⏳ Synchronized playback
+- ⏳ Shared timeline view
+- ⏳ Independent controls
+
+**Overall Progress:** 20% complete (Phase 1 of 5)
 
 ### Creating Annotations
 
-1. Click "Add Annotation" button
-2. Fill in the annotation details:
-   - Title and description
-   - Start and end times
-   - Color and type
-3. Click "Create" to save
+**Current:** Click on timeline to mark incidents (basic functionality)
 
-### Navigation
+**Coming in Phase 2:**
 
-- Click on annotation markers in the progress bar
-- Use the annotation list in the sidebar
-- Click the play button next to any annotation
+1. Press `Shift + M` or `1-5` for quick marks
+2. Fill in annotation dialog (type, severity, description)
+3. Add tags for categorization
+4. Save and see on timeline
 
-## 🚨 Troubleshooting
+### Exporting Evidence Clips
 
-### Backend Connection Issues
+**Coming in Phase 4:**
 
-If you see `ERR_CONNECTION_REFUSED` or similar errors:
-
-1. **Check which backend is running**:
-
-   ```bash
-   docker-compose -f docker-compose.dev.yml ps
-   ```
-
-2. **Switch to NestJS (recommended for current frontend)**:
-
-   ```bash
-   ./scripts/switch-backend.sh nestjs
-   ./scripts/stop.sh && ./scripts/start.sh dev
-   ```
-
-3. **Verify the switch worked**:
-   - Frontend should work at http://localhost:3000
-   - GraphQL playground at http://localhost:3001/graphql
-
-### Backend Compatibility
-
-| Backend     | API Type | Frontend Compatibility         | Status      |
-| ----------- | -------- | ------------------------------ | ----------- |
-| **FastAPI** | REST API | ❌ Needs frontend updates      | Default     |
-| **NestJS**  | GraphQL  | ✅ Works with current frontend | Alternative |
-
-### Quick Fix for Connection Errors
-
-```bash
-# If you get connection errors, use NestJS:
-./scripts/switch-backend.sh nestjs
-./scripts/stop.sh && ./scripts/start.sh dev
-./scripts/seed-nestjs.sh
-```
+1. Select time range on timeline
+2. Click "Export Clip" button
+3. Configure quality and format
+4. Add watermark with case number
+5. Download when processing complete
 
 ## 🔧 Development
 
@@ -314,55 +307,45 @@ If you see `ERR_CONNECTION_REFUSED` or similar errors:
 
 ```bash
 # Docker Management
-./scripts/start.sh dev   # Start in development mode (FastAPI default)
-./scripts/start.sh       # Start in production mode (FastAPI default)
-./scripts/stop.sh        # Stop all services and kill port processes
-./scripts/clean.sh       # Clean up everything and kill port processes
-./scripts/kill-ports.sh  # Kill processes on project ports only
-./scripts/docker-test.sh # Test Docker setup
-
-# Backend Management
-./scripts/switch-backend.sh fastapi  # Switch to FastAPI (REST API)
-./scripts/switch-backend.sh nestjs   # Switch to NestJS (GraphQL - recommended)
-./scripts/seed-fastapi.sh           # Seed FastAPI database
-./scripts/seed-nestjs.sh            # Seed NestJS database
+./scripts/start.sh dev      # Start in development mode
+./scripts/start.sh          # Start in production mode
+./scripts/stop.sh           # Stop all services
+./scripts/clean.sh          # Clean up everything
+./scripts/seed.sh           # Seed database
 
 # Manual Development
-npm run dev              # Start both frontend and backend
-npm run dev:frontend     # Start only frontend
-npm run dev:backend      # Start only backend
+npm run dev                 # Start both frontend and backend
+npm run dev:frontend        # Start only frontend
+npm run dev:backend         # Start only backend
 
 # Building
-npm run build            # Build both applications
-npm run build:frontend   # Build frontend
-npm run build:backend    # Build backend
-
-# Database
-npm run seed             # Seed database with sample data (local)
-npm run seed:docker      # Seed database with sample data (Docker)
+npm run build               # Build frontend
+npm run build:frontend      # Build frontend only
 ```
 
 ### Environment Variables
 
-#### Backend (.env)
+**Backend (.env in backend-fastapi/):**
 
 ```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/video_player
-NODE_ENV=development
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/insider_threat
+ENVIRONMENT=development
+CORS_ORIGINS=http://localhost:3000
 ```
 
-#### Frontend (.env.local)
+**Frontend (.env.local in frontend/):**
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3001/graphql
+NEXT_PUBLIC_API_URL=http://localhost:8000/graphql
+NEXT_PUBLIC_VIDEO_URL=http://localhost:8000
 ```
 
 ## 🐳 Docker
 
 ### Services
 
-- **postgres**: PostgreSQL database
-- **backend**: NestJS API server
+- **postgres**: PostgreSQL 15 database
+- **backend**: FastAPI with GraphQL
 - **frontend**: Next.js application
 
 ### Commands
@@ -374,67 +357,21 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/graphql
 # Start all services (production)
 ./scripts/start.sh
 
-# Stop all services and kill port processes
+# Stop all services
 ./scripts/stop.sh
 
-# Clean up everything (removes volumes and kills ports)
+# Clean up everything (removes volumes)
 ./scripts/clean.sh
 
-# Kill processes on project ports only
-./scripts/kill-ports.sh
-
-# Seed database with sample data
-./scripts/seed-nestjs.sh
+# Seed database
+./scripts/seed.sh
 
 # View logs
 docker-compose -f docker-compose.dev.yml logs -f
 
-# Traditional Docker commands (alternative)
-docker-compose up -d
-docker-compose down
-docker-compose down -v
-```
-
-### Enhanced Scripts
-
-The project includes several enhanced scripts for better development experience:
-
-#### **Port Management**
-
-All scripts now include automatic port cleanup to prevent conflicts:
-
-- **Port 3000**: Frontend (Next.js)
-- **Port 3001**: Backend (NestJS)
-- **Port 5432**: PostgreSQL Database
-
-#### **Script Features**
-
-| Script           | Purpose                    | Port Cleanup | Volume Cleanup |
-| ---------------- | -------------------------- | ------------ | -------------- |
-| `start.sh dev`   | Start development services | ❌           | ❌             |
-| `start.sh`       | Start production services  | ❌           | ❌             |
-| `stop.sh`        | Stop services              | ✅           | ❌             |
-| `clean.sh`       | Clean everything           | ✅           | ✅             |
-| `kill-ports.sh`  | Kill port processes only   | ✅           | ❌             |
-| `seed-nestjs.sh` | Seed database              | ❌           | ❌             |
-
-#### **Usage Examples**
-
-```bash
-# Start development environment
-./scripts/start.sh dev
-
-# Seed with sample data
-./scripts/seed-nestjs.sh
-
-# Stop and clean up
-./scripts/stop.sh
-
-# Complete cleanup (removes all data)
-./scripts/clean.sh
-
-# Just kill processes on ports (useful for troubleshooting)
-./scripts/kill-ports.sh
+# View specific service logs
+docker-compose -f docker-compose.dev.yml logs -f backend
+docker-compose -f docker-compose.dev.yml logs -f frontend
 ```
 
 ## 📊 Database Schema
@@ -444,17 +381,15 @@ All scripts now include automatic port cleanup to prevent conflicts:
 ```sql
 CREATE TABLE videos (
   id UUID PRIMARY KEY,
-  title VARCHAR NOT NULL,
+  title VARCHAR(255) NOT NULL,
   description TEXT,
-  filename VARCHAR NOT NULL,
-  original_name VARCHAR NOT NULL,
-  mime_type VARCHAR NOT NULL,
-  size BIGINT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  file_url VARCHAR(500) NOT NULL,
   duration FLOAT NOT NULL,
-  views BIGINT DEFAULT 0,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  fps INTEGER DEFAULT 30,
+  case_id VARCHAR(100),
+  source_type VARCHAR(50),
+  created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -463,170 +398,89 @@ CREATE TABLE videos (
 ```sql
 CREATE TABLE annotations (
   id UUID PRIMARY KEY,
-  title VARCHAR NOT NULL,
-  description TEXT,
-  start_time FLOAT NOT NULL,
-  end_time FLOAT NOT NULL,
-  type VARCHAR DEFAULT 'chapter',
-  color VARCHAR DEFAULT '#3B82F6',
-  is_active BOOLEAN DEFAULT true,
   video_id UUID REFERENCES videos(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  start_time FLOAT NOT NULL,
+  end_time FLOAT,
+  type VARCHAR(50) NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  severity VARCHAR(20),
+  tags TEXT[],
+  color VARCHAR(20),
+  created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
-## 🔌 API Reference
+## 🔌 GraphQL API
 
-### GraphQL Queries
+### Example Queries
 
-#### Get All Videos
+**Get All Videos:**
 
 ```graphql
 query GetVideos {
   videos {
     id
     title
-    description
-    filename
     duration
-    views
+    caseId
     annotations {
       id
       title
-      startTime
-      endTime
-      color
-    }
-  }
-}
-```
-
-#### Get Video by ID
-
-```graphql
-query GetVideo($id: ID!) {
-  video(id: $id) {
-    id
-    title
-    description
-    filename
-    duration
-    views
-    annotations {
-      id
-      title
-      description
-      startTime
-      endTime
       type
-      color
+      severity
+      startTime
+      endTime
     }
   }
 }
 ```
 
-#### Get Annotations by Video
+**Create Annotation:**
 
 ```graphql
-query GetAnnotationsByVideo($videoId: ID!) {
-  annotationsByVideo(videoId: $videoId) {
+mutation CreateAnnotation($input: CreateAnnotationInput!) {
+  createAnnotation(input: $input) {
     id
     title
-    description
+    type
+    severity
     startTime
     endTime
-    type
-    color
   }
 }
 ```
 
-### GraphQL Mutations
+## 🚨 Troubleshooting
 
-#### Create Annotation
+### TypeScript/Lint Errors in EnhancedVideoPlayer
 
-```graphql
-mutation CreateAnnotation($createAnnotationInput: CreateAnnotationInput!) {
-  createAnnotation(createAnnotationInput: $createAnnotationInput) {
-    id
-    title
-    description
-    startTime
-    endTime
-    type
-    color
-  }
-}
-```
+If you see TypeScript errors in `EnhancedVideoPlayer.tsx`:
 
-## 🚀 Deployment
+**This is normal!** The errors occur because dependencies haven't been installed yet.
 
-### Production Build
+**Solution:**
 
 ```bash
-# Build all services
-npm run build
-
-# Start production services
-docker-compose -f docker-compose.prod.yml up -d
+cd frontend
+npm install
 ```
 
-### Environment Setup
-
-1. Set production environment variables
-2. Configure reverse proxy (nginx)
-3. Set up SSL certificates
-4. Configure database backups
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-
-- Create an issue in the repository
-- Check the documentation
-- Review the GraphQL playground at `/graphql`
-
-## 🔮 Future Enhancements
-
-- [ ] Video upload functionality
-- [ ] User authentication and authorization
-- [ ] Playlist management
-- [ ] Video transcoding
-- [ ] Analytics and viewing statistics
-- [ ] Mobile app
-- [ ] Real-time collaboration
-- [ ] Video comments and discussions
-
-## 🔧 Troubleshooting
+All errors will disappear after installation. See `LINT_ERRORS_EXPLAINED.md` for details.
 
 ### Port Conflicts
 
-If you encounter port conflicts (ports 3000, 3001, or 5432 already in use):
+If ports 3000, 8000, or 5432 are already in use:
 
 ```bash
-# Kill processes on project ports only
+# Kill processes on project ports
 ./scripts/kill-ports.sh
 
-# Or stop all services and kill ports
+# Or stop all services
 ./scripts/stop.sh
 ```
 
 ### Database Connection Issues
-
-If the backend can't connect to the database:
 
 1. **Check if services are running:**
 
@@ -646,22 +500,16 @@ If the backend can't connect to the database:
    docker-compose -f docker-compose.dev.yml logs postgres
    ```
 
-### Seeding Issues
+### Frontend Won't Start
 
-If database seeding fails:
+If frontend fails to start:
 
-1. **Ensure services are running:**
-
-   ```bash
-   ./scripts/start.sh dev
-   ```
-
-2. **Wait for services to be ready (30-60 seconds)**
-
-3. **Run seed script:**
-   ```bash
-   ./scripts/seed-nestjs.sh
-   ```
+```bash
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+```
 
 ### Complete Reset
 
@@ -674,6 +522,95 @@ To completely reset the project:
 # Start fresh
 ./scripts/start.sh dev
 
+# Reinstall frontend dependencies
+cd frontend && npm install && cd ..
+
 # Seed with sample data
-./scripts/seed-nestjs.sh
+./scripts/seed.sh
 ```
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the project root:
+
+- **QUICK_START.md** - Get started in 3 steps
+- **INSIDER_THREAT_VIDEO_LIBRARY_SPEC.md** - Complete functional specification
+- **IMPLEMENTATION_GUIDE.md** - Technical implementation details
+- **MIGRATION_SUMMARY.md** - What changed from the old system
+- **PHASE_1_CHECKLIST.md** - Task tracking and testing checklist
+- **COMPLETION_SUMMARY.md** - Project transformation overview
+- **LINT_ERRORS_EXPLAINED.md** - Why you see TypeScript errors (and how to fix)
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue in the repository
+- Check the GraphQL playground at http://localhost:8000/graphql
+- Review the API docs at http://localhost:8000/docs
+- Read the documentation files listed above
+
+## 🔮 Roadmap
+
+### Phase 2: Annotation System (Next - 2 weeks)
+
+- [ ] Annotation dialog component
+- [ ] Annotation panel with filtering
+- [ ] GraphQL CRUD integration
+- [ ] Annotation search
+
+### Phase 3: Timeline Enhancement (4 weeks)
+
+- [ ] Canvas-based timeline with Konva
+- [ ] Zoom functionality (10 levels)
+- [ ] Thumbnail preview on hover
+- [ ] Heatmap visualization
+
+### Phase 4: Export Functionality (3 weeks)
+
+- [ ] Export dialog component
+- [ ] FFmpeg integration
+- [ ] Progress tracking
+- [ ] Watermarking support
+
+### Phase 5: Multi-Video Support (4 weeks)
+
+- [ ] Grid layout (2x2, 2x1)
+- [ ] Synchronized playback
+- [ ] Shared timeline view
+- [ ] Independent controls
+
+### Future Enhancements
+
+- [ ] AI-assisted incident detection
+- [ ] Real-time collaboration features
+- [ ] Mobile app (React Native)
+- [ ] Advanced analytics dashboard
+
+---
+
+## 🎉 Project Status
+
+**Phase 1 Complete!** The enhanced video player is ready with:
+
+- ✅ 10 playback speeds (0.25x - 8x)
+- ✅ Frame-by-frame navigation
+- ✅ 30+ keyboard shortcuts
+- ✅ Speed & frame indicators
+- ✅ Keyboard help overlay
+- ✅ Zustand state management
+- ✅ Auto-hide controls
+
+**Next:** Phase 2 - Annotation System (2 weeks)
+
+**Overall Progress:** 20% complete (Phase 1 of 5)
+
+---
+
+**Built for security analysts investigating insider threats**  
+**Tech Stack:** React 19 + Next.js 15 + FastAPI + GraphQL + PostgreSQL  
+**Focus:** Frame-accurate analysis, high-speed review, efficient workflow

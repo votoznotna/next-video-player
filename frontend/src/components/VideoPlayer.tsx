@@ -1,21 +1,7 @@
 'use client';
 
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  SkipBack,
-  SkipForward,
-} from 'lucide-react';
+import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward } from 'lucide-react';
 import { formatDuration } from '@/lib/utils';
 import { Annotation } from '@/types';
 
@@ -99,10 +85,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
       return () => {
         videoElement.removeEventListener('timeupdate', handleTimeUpdate);
-        videoElement.removeEventListener(
-          'loadedmetadata',
-          handleLoadedMetadata
-        );
+        videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
         videoElement.removeEventListener('play', handlePlay);
         videoElement.removeEventListener('pause', handlePause);
         videoElement.removeEventListener('error', handleError);
@@ -164,10 +147,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
       const videoElement = videoRef.current;
       if (!videoElement) return;
 
-      videoElement.currentTime = Math.max(
-        0,
-        Math.min(duration, currentTime + seconds)
-      );
+      videoElement.currentTime = Math.max(0, Math.min(duration, currentTime + seconds));
     };
 
     const toggleFullscreen = () => {
@@ -193,26 +173,23 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
     return (
       <div
-        className='video-player-container relative bg-black rounded-lg overflow-hidden'
+        className="video-player-container relative bg-black rounded-lg overflow-hidden"
         onMouseEnter={() => setShowControls(true)}
         onMouseLeave={() => setShowControls(false)}
       >
         <video
           ref={videoRef}
-          className='w-full h-full'
-          src={`http://localhost:3001/videos/${video.filename}`}
-          poster=''
+          className="w-full h-full"
+          src={`http://localhost:8000/videos/${video.filename}`}
+          poster=""
           onClick={togglePlay}
         />
 
         {/* Progress Bar with Annotations */}
-        <div className='absolute bottom-16 left-0 right-0 px-4'>
-          <div
-            className='progress-bar relative h-1 bg-gray-600 rounded cursor-pointer'
-            onClick={handleSeek}
-          >
+        <div className="absolute bottom-16 left-0 right-0 px-4">
+          <div className="progress-bar relative h-1 bg-gray-600 rounded cursor-pointer" onClick={handleSeek}>
             <div
-              className='progress-fill h-full bg-blue-500 rounded transition-all duration-100'
+              className="progress-fill h-full bg-blue-500 rounded transition-all duration-100"
               style={{ width: `${(currentTime / duration) * 100}%` }}
             />
 
@@ -220,7 +197,7 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             {annotations.map((annotation) => (
               <div
                 key={annotation.id}
-                className='absolute top-0 h-full cursor-pointer transition-all duration-200 hover:h-2'
+                className="absolute top-0 h-full cursor-pointer transition-all duration-200 hover:h-2"
                 style={{
                   left: `${getAnnotationPosition(annotation)}%`,
                   width: `${getAnnotationWidth(annotation)}%`,
@@ -243,65 +220,50 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             showControls ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
-          <div className='flex items-center space-x-4'>
+          <div className="flex items-center space-x-4">
             {/* Play/Pause Button */}
-            <button
-              onClick={togglePlay}
-              className='text-white hover:text-blue-400 transition-colors'
-            >
+            <button onClick={togglePlay} className="text-white hover:text-blue-400 transition-colors">
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
 
             {/* Skip Buttons */}
-            <button
-              onClick={() => skipTime(-10)}
-              className='text-white hover:text-blue-400 transition-colors'
-            >
+            <button onClick={() => skipTime(-10)} className="text-white hover:text-blue-400 transition-colors">
               <SkipBack size={20} />
             </button>
-            <button
-              onClick={() => skipTime(10)}
-              className='text-white hover:text-blue-400 transition-colors'
-            >
+            <button onClick={() => skipTime(10)} className="text-white hover:text-blue-400 transition-colors">
               <SkipForward size={20} />
             </button>
 
             {/* Time Display */}
-            <div className='text-white text-sm font-mono'>
+            <div className="text-white text-sm font-mono">
               {formatDuration(currentTime)} / {formatDuration(duration)}
             </div>
 
             {/* Volume Control */}
-            <div className='flex items-center space-x-2'>
-              <button
-                onClick={toggleMute}
-                className='text-white hover:text-blue-400 transition-colors'
-              >
+            <div className="flex items-center space-x-2">
+              <button onClick={toggleMute} className="text-white hover:text-blue-400 transition-colors">
                 {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
               </button>
               <input
-                type='range'
-                min='0'
-                max='1'
-                step='0.1'
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                className='w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer'
+                className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
               />
             </div>
 
             {/* Fullscreen Button */}
-            <button
-              onClick={toggleFullscreen}
-              className='text-white hover:text-blue-400 transition-colors ml-auto'
-            >
+            <button onClick={toggleFullscreen} className="text-white hover:text-blue-400 transition-colors ml-auto">
               <Maximize size={20} />
             </button>
           </div>
         </div>
       </div>
     );
-  }
+  },
 );
 
 VideoPlayer.displayName = 'VideoPlayer';

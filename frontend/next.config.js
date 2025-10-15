@@ -5,7 +5,7 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
-        port: '3001',
+        port: '8000',
         pathname: '/videos/**',
       },
     ],
@@ -14,8 +14,7 @@ const nextConfig = {
     return [
       {
         source: '/api/graphql',
-        destination:
-          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/graphql',
+        destination: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/graphql',
       },
     ];
   },

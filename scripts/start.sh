@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting Video Player Application..."
+echo "🚀 Starting Insider Threat Video Analyzer..."
 
 # Create videos directory if it doesn't exist
 mkdir -p videos
@@ -29,8 +29,11 @@ docker-compose -f $COMPOSE_FILE ps
 echo "✅ Services started successfully!"
 echo ""
 echo "🌐 Frontend: http://localhost:3000"
-echo "🔧 Backend GraphQL: http://localhost:3001/graphql"
+echo "🔧 Backend (FastAPI): http://localhost:8000"
+echo "📊 GraphQL Playground: http://localhost:8000/graphql"
+echo "📚 API Docs: http://localhost:8000/docs"
 echo "🗄️  Database: localhost:5432"
 echo ""
 echo "📝 To view logs: docker-compose -f $COMPOSE_FILE logs -f"
 echo "🛑 To stop: ./scripts/stop.sh"
+echo "🌱 To seed database: ./scripts/seed.sh"
