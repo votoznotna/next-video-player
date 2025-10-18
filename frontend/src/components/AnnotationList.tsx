@@ -23,14 +23,6 @@ export default function AnnotationList({
   // Simple selection logic - just use the selectedAnnotationId directly
   const isAnnotationSelected = (annotation: Annotation) => {
     const isSelected = selectedAnnotationId === annotation.id;
-    if (isSelected) {
-      console.log(
-        'Annotation is selected:',
-        annotation.title,
-        'ID:',
-        annotation.id
-      );
-    }
     return isSelected;
   };
 

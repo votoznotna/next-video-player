@@ -8,9 +8,10 @@ from pathlib import Path
 import aiofiles
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal, engine, Base
-from app.models import Video, Annotation
+from app.models import Video, Annotation, VideoChunk
 from app.services.video_service import VideoService
 from app.services.annotation_service import AnnotationService
+from app.services.video_processing import VideoProcessingService
 from app.schemas.video import VideoCreate
 from app.schemas.annotation import AnnotationCreate
 
@@ -31,34 +32,16 @@ async def seed_database():
         video_service = VideoService(db)
         annotation_service = AnnotationService(db)
         
-        # Sample videos data
+        # Sample videos data - Only demo video for YouTube-like player
         sample_videos = [
             {
-                "title": "Introduction to React Hooks",
-                "description": "Learn the fundamentals of React Hooks including useState, useEffect, and custom hooks.",
-                "filename": "react-hooks-intro.mp4",
-                "originalName": "react-hooks-intro.mp4",
+                "title": "Demo Video - YouTube-like Player",
+                "description": "A demonstration video showcasing the YouTube-like video player with frame preview and chunking capabilities. This 30-minute video demonstrates how large video files are automatically chunked for efficient streaming.",
+                "filename": "demo_video.mp4",
+                "originalName": "demo_video.mp4",
                 "mimeType": "video/mp4",
-                "size": 15728640,
-                "duration": 1200,
-            },
-            {
-                "title": "Advanced TypeScript Patterns",
-                "description": "Explore advanced TypeScript patterns and best practices for large-scale applications.",
-                "filename": "typescript-advanced.mp4",
-                "originalName": "typescript-advanced.mp4",
-                "mimeType": "video/mp4",
-                "size": 25165824,
-                "duration": 1800,
-            },
-            {
-                "title": "GraphQL API Development",
-                "description": "Build scalable APIs with GraphQL and modern frameworks.",
-                "filename": "graphql-api.mp4",
-                "originalName": "graphql-api.mp4",
-                "mimeType": "video/mp4",
-                "size": 31457280,
-                "duration": 2400,
+                "size": 52428800,  # 50MB
+                "duration": 1800,  # 30 minutes for chunking demo
             },
         ]
         
@@ -78,51 +61,60 @@ async def seed_database():
             created_videos.append(video)
             print(f"✅ Created video: {video.title}")
         
-        # Sample annotations for the first video
+        # Sample annotations for the 30-minute demo video
         sample_annotations = [
             {
-                "title": "Introduction",
-                "description": "Welcome and overview of the course",
+                "title": "Video Player Introduction",
+                "description": "Introduction to the YouTube-like video player features",
                 "startTime": 0,
-                "endTime": 60,
+                "endTime": 180,  # 3 minutes
                 "type": "chapter",
                 "color": "#3B82F6",
                 "videoId": created_videos[0].id,
             },
             {
-                "title": "useState Hook",
-                "description": "Understanding the useState hook for state management",
-                "startTime": 60,
-                "endTime": 300,
+                "title": "Frame Preview Demo",
+                "description": "Demonstration of frame preview on timeline hover",
+                "startTime": 180,
+                "endTime": 360,  # 3-6 minutes
                 "type": "chapter",
                 "color": "#10B981",
                 "videoId": created_videos[0].id,
             },
             {
-                "title": "useEffect Hook",
-                "description": "Side effects and lifecycle management with useEffect",
-                "startTime": 300,
-                "endTime": 600,
+                "title": "Video Chunking System",
+                "description": "How video chunking works for large files",
+                "startTime": 360,
+                "endTime": 720,  # 6-12 minutes
                 "type": "chapter",
                 "color": "#F59E0B",
                 "videoId": created_videos[0].id,
             },
             {
-                "title": "Custom Hooks",
-                "description": "Creating reusable custom hooks",
-                "startTime": 600,
-                "endTime": 900,
+                "title": "Keyboard Shortcuts",
+                "description": "Advanced keyboard controls for video navigation",
+                "startTime": 720,
+                "endTime": 1080,  # 12-18 minutes
                 "type": "chapter",
                 "color": "#EF4444",
                 "videoId": created_videos[0].id,
             },
             {
-                "title": "Best Practices",
-                "description": "React Hooks best practices and common pitfalls",
-                "startTime": 900,
-                "endTime": 1200,
+                "title": "Annotation System",
+                "description": "Adding and managing video annotations",
+                "startTime": 1080,
+                "endTime": 1440,  # 18-24 minutes
                 "type": "chapter",
                 "color": "#8B5CF6",
+                "videoId": created_videos[0].id,
+            },
+            {
+                "title": "Performance Features",
+                "description": "Optimizations for large video files",
+                "startTime": 1440,
+                "endTime": 1800,  # 24-30 minutes
+                "type": "chapter",
+                "color": "#06B6D4",
                 "videoId": created_videos[0].id,
             },
         ]
@@ -156,6 +148,19 @@ async def seed_database():
                     print(f"⚠️ Error creating video file {video.filename}: {e}")
             else:
                 print(f"📹 Video file already exists: {video.filename}")
+        
+        # Process video chunks for the demo video
+        print("🔧 Processing video chunks...")
+        video_processing_service = VideoProcessingService(chunk_duration=120)  # 2 minutes
+        
+        for video in created_videos:
+            video_path = videos_dir / video.filename
+            if video_path.exists() and video.title == "Demo Video - YouTube-like Player":
+                try:
+                    chunks = await video_processing_service.chunk_video(video.id, video_path, db)
+                    print(f"✅ Created {len(chunks)} chunks for {video.title}")
+                except Exception as e:
+                    print(f"⚠️ Error chunking video {video.title}: {e}")
         
         print("🎉 FastAPI seeding completed successfully!")
 

@@ -31,6 +31,7 @@ class Video(Base):
     
     # Relationships
     annotations = relationship("Annotation", back_populates="video", cascade="all, delete-orphan")
+    chunks = relationship("VideoChunk", back_populates="video", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Video(id={self.id}, title='{self.title}')>"

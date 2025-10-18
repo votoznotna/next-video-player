@@ -87,7 +87,7 @@ jspm_packages/
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-# Video files (for development)
+# Video files and generated content
 videos/
 *.mp4
 *.avi
@@ -95,6 +95,17 @@ videos/
 *.wmv
 *.flv
 *.webm
+*.mkv
+
+# Generated video chunks and streams
+videos/chunks/
+videos/hls/
+videos/thumbnails/
+videos/sprites/
+
+# Video processing temporary files
+*.tmp
+*.temp
 
 # Database
 *.db

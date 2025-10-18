@@ -1,10 +1,39 @@
-# Insider Threat Video Analyzer
+# YouTube-like Video Player with Frame Preview
 
-A professional React 19 video analysis library designed for security analysts investigating insider threats. Features frame-accurate navigation, high-speed playback, incident annotation, and evidence export capabilities.
+A professional video analysis platform featuring a YouTube-like player with frame preview on timeline hover, video chunking, and advanced video streaming capabilities. Built with React 19, Next.js 15, FastAPI, and PostgreSQL.
+
+## 🎬 Demo
+
+![YouTube-like Video Player Demo](video-player-demo.gif)
+
+_Timeline click selection, green interval highlighting, frame preview on hover, and smooth seeking_
+
+## 🎉 Latest Updates (Current Version)
+
+### ✅ **Fully Working YouTube-like Player**
+
+- **Timeline Click Selection**: Click anywhere on timeline to select annotations
+- **Green Interval Highlighting**: Visual feedback showing selected annotation intervals
+- **Smooth Seeking**: Instant video seeking without shaking or freezing
+- **Clean UI**: No red markers or visual artifacts
+- **Stable Performance**: All selections work consistently after first click
+- **WebM Support**: Optimized video format for web streaming
+- **Range Request Streaming**: Efficient video delivery with HTTP range requests
 
 ## 🎯 Key Features
 
-### For Security Analysts
+### YouTube-like Video Player
+
+- **Frame Preview on Timeline Hover**: Hover over timeline to see frame previews with time and chunk info, just like YouTube
+- **Timeline Click Selection**: Click anywhere on timeline to select corresponding annotations
+- **Green Interval Highlighting**: Visual feedback showing selected annotation intervals (1st annotation = 1 green interval, 2nd = 2 intervals, etc.)
+- **Video Chunking System**: Large videos automatically split into 2-minute chunks for efficient loading
+- **Real-time Frame Counter**: Shows current frame number and timestamp
+- **Smooth Timeline Navigation**: Click anywhere on timeline to seek instantly without shaking
+- **WebM Video Support**: Optimized video format for web streaming with range requests
+- **Custom Video Support**: Easy integration of your own video files
+
+### Advanced Video Features
 
 - **High-Speed Playback:** 0.25x to 8x speed for rapid video review (10 speed options)
 - **Frame-Accurate Navigation:** Precise incident marking (±1 frame precision)
@@ -13,17 +42,21 @@ A professional React 19 video analysis library designed for security analysts in
 - **Keyboard Help Overlay:** Press `?` to see all available shortcuts
 - **Incident Annotation System:** 5 threat categories (Critical, Suspicious, Policy Violation, Note, Evidence)
 - **Timeline Visualization:** Visual timeline with color-coded incident markers
-- **Evidence Export:** Extract clips with watermarks for reports (Phase 4)
-- **Multi-Video Comparison:** Side-by-side analysis (Phase 5)
+- **Video Chunking**: Configurable chunking for large video files
+- **Thumbnail Generation**: Automatic thumbnail sprites for timeline previews
 
 ### Technical Stack
 
 - **Frontend:** React 19 + Next.js 15 + TypeScript + Zustand
+- **Video Player:** HTML5 Video with Canvas-based frame preview + Range Request Streaming
+- **Video Format:** WebM (VP9) for optimal web streaming performance
 - **UI Components:** Radix UI (accessible, headless components)
 - **Backend:** FastAPI + Strawberry GraphQL
-- **Database:** PostgreSQL 15
+- **Video Processing:** FFmpeg for chunking and frame extraction
+- **Database:** PostgreSQL 15 with video chunk metadata
 - **Containerization:** Docker + Docker Compose
 - **State Management:** Zustand (lightweight, no boilerplate)
+- **Streaming:** HTTP Range Requests for efficient video delivery
 
 ## 🏗️ Architecture
 
@@ -52,15 +85,74 @@ A professional React 19 video analysis library designed for security analysts in
 - Docker and Docker Compose
 - Node.js 18+ (for local development)
 - Python 3.11+ (for local backend development)
-- Python 3.11+ (for local development)
+- FFmpeg (for video processing)
 
-### Installation
+### One-Command Demo Setup
+
+**Start the complete demo with frame preview:**
+
+```bash
+./scripts/start-demo.sh
+```
+
+This single command will:
+
+- ✅ Check dependencies (Docker, FFmpeg)
+- ✅ Clean up any existing setup
+- ✅ Create animated demo video (30 minutes with colorful content)
+- ✅ Start all services (Frontend, Backend, Database)
+- ✅ Run database migrations
+- ✅ Seed database with sample data
+- ✅ Generate video chunks for efficient streaming
+- ✅ Display access URLs and features
+
+### Using Your Own Videos
+
+**Quick Method - Replace Demo Video:**
+
+```bash
+# 1. Place your video in the videos folder
+cp /path/to/your/video.mp4 videos/demo_video.mp4
+
+# 2. Run the demo script (auto-chunks your video)
+./scripts/start-demo.sh
+
+# 3. Open browser and enjoy!
+open http://localhost:3000
+```
+
+**Your video will be automatically:**
+
+- ✅ **Chunked** into 2-minute segments for efficient loading
+- ✅ **Metadata stored** in database with chunk information
+- ✅ **Frame previews enabled** on timeline hover
+- ✅ **YouTube-like features** ready to use
+
+**Supported Video Formats:**
+
+- **WebM** (VP9) - **Recommended** for web streaming (current default)
+- **MP4** (H.264) - Good compatibility
+- **MOV** (H.264) - Apple format
+
+**Video Specifications:**
+
+- **Resolution**: Any (1280x720 recommended)
+- **Frame Rate**: 24-60 FPS
+- **Duration**: Any length (will be chunked automatically)
+- **Codec**: VP9 (WebM), H.264 (MP4), or VP8
+- **Streaming**: HTTP Range Requests for efficient seeking
+
+For detailed configuration options, see [docs/CUSTOM_VIDEO_GUIDE.md](docs/CUSTOM_VIDEO_GUIDE.md).
+
+**Important:** Video files and chunks are automatically generated by the demo scripts and are excluded from git via `.gitignore`. This keeps the repository lightweight while allowing full functionality.
+
+### Manual Setup (Alternative)
 
 1. **Clone the repository**
 
    ```bash
    git clone <repository-url>
-   cd insider-threat-video-analyzer
+   cd video-player
    ```
 
 2. **Install frontend dependencies**
@@ -71,11 +163,11 @@ A professional React 19 video analysis library designed for security analysts in
    cd ..
    ```
 
-   **Important:** This installs the new dependencies for the enhanced video player:
-
+   **Important:** This installs the video streaming libraries:
+   - `hls.js` - HLS streaming support
+   - `video.js` - Professional video player
    - `zustand` - State management
    - `@radix-ui/*` - UI components
-   - `date-fns` - Time utilities
 
 3. **Start all services (Docker - Recommended)**
 
@@ -91,61 +183,92 @@ A professional React 19 video analysis library designed for security analysts in
    ./scripts/seed.sh
    ```
 
-   **Note:** The database is automatically created by Docker when the postgres container starts for the first time.
+5. **Generate HLS streams (for HLS player)**
 
-5. **Access the application**
+   ```bash
+   # Generate HLS streams with adaptive bitrate
+   curl -X POST http://localhost:8000/api/v1/videos/{video_id}/hls/generate
+   ```
 
+6. **Access the application**
    - **Frontend:** http://localhost:3000
    - **Backend API:** http://localhost:8000
    - **GraphQL Playground:** http://localhost:8000/graphql
    - **API Docs:** http://localhost:8000/docs
    - **Database:** localhost:5432
 
-6. **Test the enhanced player**
-   - Open a video
-   - Press `?` to see all keyboard shortcuts
-   - Try different playback speeds with `[` and `]`
-   - Use `,` and `.` for frame-by-frame navigation
+### Configuration Options
 
-### Manual Setup (Alternative)
+**Use HLS streaming (recommended):**
 
-1. **Install dependencies**
+```bash
+USE_HLS=true ./scripts/start-demo.sh
+```
 
-   ```bash
-   npm run setup
-   ```
+**Use basic chunking:**
 
-2. **Start database**
+```bash
+USE_HLS=false ./scripts/start-demo.sh
+```
 
-   ```bash
-   docker-compose -f docker-compose.dev.yml up -d postgres
-   ```
+**Custom chunk duration:**
 
-3. **Start backend**
+```bash
+CHUNK_DURATION=60 ./scripts/start-demo.sh  # 1-minute chunks
+```
 
-   ```bash
-   cd backend-fastapi
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload
-   ```
+## 🎮 Usage
 
-4. **Start frontend**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+### YouTube-like Video Player
+
+The application features a professional YouTube-like video player with:
+
+**Key Features:**
+
+- **Frame Preview on Hover**: Hover over timeline to see frame previews
+- **Timeline Click Selection**: Click anywhere on timeline to select annotations
+- **Green Interval Highlighting**: Visual feedback showing selected annotation intervals
+- **WebM Streaming**: Optimized video format with HTTP range requests
+- **Smooth Seeking**: Instant seeking without shaking or freezing
+- **Clean UI**: No red markers or visual artifacts
+
+### Video Streaming Options
+
+**WebM Streaming (Current Default):**
+
+- HTTP Range Request streaming
+- Optimized for web delivery
+- Smooth seeking without shaking
+- Efficient video loading
+- Professional streaming performance
+
+**HLS Streaming (Alternative):**
+
+- Adaptive bitrate streaming
+- Multiple quality levels (360p/720p/1080p)
+- 10-second segments for fast seeking
+- Professional streaming performance
+- Mobile optimized
+
+**Basic Chunking (Educational):**
+
+- Configurable chunk duration (default: 2 minutes)
+- Manual chunk management
+- Good for learning and simple demos
+- Full control over chunking logic
 
 ## 📁 Project Structure
 
 ```
-insider-threat-video-analyzer/
+video-player/
 ├── frontend/                 # Next.js 15 application
 │   ├── src/
 │   │   ├── app/             # App Router pages
 │   │   ├── components/      # React components
-│   │   │   ├── VideoPlayer.tsx (legacy)
-│   │   │   ├── EnhancedVideoPlayer.tsx (new)
+│   │   │   ├── YouTubeLikePlayer.tsx (main player with WebM streaming)
+│   │   │   ├── HLSVideoPlayer.tsx (HLS streaming)
+│   │   │   ├── SimpleSeekingPlayer.tsx (basic seeking)
+│   │   │   ├── EnhancedVideoPlayer.tsx (legacy)
 │   │   │   └── VideoCard.tsx
 │   │   ├── hooks/          # Custom React hooks
 │   │   │   └── useKeyboardShortcuts.ts
@@ -156,28 +279,117 @@ insider-threat-video-analyzer/
 │   └── package.json
 ├── backend-fastapi/         # FastAPI backend
 │   ├── app/
-│   │   ├── api/            # GraphQL resolvers
+│   │   ├── api/            # API endpoints
+│   │   │   └── api_v1/endpoints/
+│   │   │       ├── video_stream.py (WebM streaming with range requests)
+│   │   │       ├── hls.py (HLS streaming)
+│   │   │       ├── video_chunks.py (chunking)
+│   │   │       └── videos.py
+│   │   ├── services/       # Business logic
+│   │   │   ├── hls_service.py (HLS generation)
+│   │   │   ├── video_processing.py (chunking)
+│   │   │   └── video_service.py
 │   │   ├── models/         # Database models
+│   │   │   ├── video_chunk.py (chunk metadata)
+│   │   │   └── video.py
 │   │   ├── schemas/        # Pydantic schemas
 │   │   └── main.py         # Application entry
 │   ├── requirements.txt
 │   └── seed.py             # Database seeding
 ├── scripts/                # Management scripts
+│   ├── start-demo.sh      # Complete demo setup
+│   ├── demo-setup.sh      # Advanced demo setup
 │   ├── start.sh           # Start all services
 │   ├── stop.sh            # Stop all services
 │   ├── seed.sh            # Seed database
 │   └── clean.sh           # Clean everything
-├── videos/                 # Video storage
+├── videos/                 # Video storage (gitignored - generated by scripts)
+│   ├── demo_video.webm    # Main demo video (WebM format)
+│   ├── hls/               # HLS streams (generated)
+│   ├── chunks/            # Video chunks (MP4 for frame extraction, generated)
+│   └── thumbnails/        # Generated thumbnails
 ├── docker-compose.dev.yml  # Development config
 ├── docker-compose.yml      # Production config
 └── README.md
 ```
 
+## 🎬 Demo Scripts
+
+### Complete Demo Setup
+
+**One-command demo with HLS streaming:**
+
+```bash
+./scripts/start-demo.sh
+```
+
+**What this script does:**
+
+1. ✅ Checks dependencies (Docker, FFmpeg)
+2. ✅ Cleans up existing setup
+3. ✅ Creates 30-minute animated demo video (WebM format)
+4. ✅ Starts all services (Frontend, Backend, Database)
+5. ✅ Runs database migrations
+6. ✅ Seeds database with sample data
+7. ✅ Generates video chunks for frame extraction
+8. ✅ Displays access URLs and features
+
+### Advanced Demo Setup
+
+**For more control and configuration:**
+
+```bash
+./scripts/demo-setup.sh
+```
+
+**Configuration options:**
+
+```bash
+# Use WebM streaming (current default)
+./scripts/start-demo.sh
+
+# Use HLS streaming (alternative)
+USE_HLS=true ./scripts/start-demo.sh
+
+# Use basic chunking (educational)
+USE_HLS=false ./scripts/start-demo.sh
+
+# Custom chunk duration
+CHUNK_DURATION=60 ./scripts/start-demo.sh  # 1-minute chunks
+CHUNK_DURATION=300 ./scripts/start-demo.sh # 5-minute chunks
+```
+
+### Demo Features
+
+**WebM Streaming Demo (Current Default):**
+
+- HTTP Range Request streaming
+- Smooth seeking without shaking
+- Timeline click selection for annotations
+- Green interval highlighting
+- Frame preview on hover
+- Professional streaming performance
+
+**HLS Streaming Demo (Alternative):**
+
+- Adaptive bitrate streaming (360p/720p/1080p)
+- Quality selector in video player
+- 10-second segments for fast seeking
+- Thumbnail sprites for timeline previews
+- Professional streaming performance
+
+**Basic Chunking Demo (Educational):**
+
+- Configurable chunk duration
+- Manual chunk management
+- Frame preview generation
+- Educational approach to video streaming
+
 ## 🎮 Usage
 
-### Enhanced Video Player
+### YouTube-like Video Player
 
-The application now features an enhanced video player optimized for insider threat analysis:
+The application features a professional YouTube-like video player with:
 
 **Key Features:**
 
@@ -411,9 +623,75 @@ CREATE TABLE annotations (
 );
 ```
 
-## 🔌 GraphQL API
+## 🔌 API Documentation
 
-### Example Queries
+### WebM Streaming API (Current Default)
+
+**Stream Video with Range Requests:**
+
+```bash
+GET /api/v1/videos/{video_id}/stream
+```
+
+**Get Frame Preview:**
+
+```bash
+GET /api/v1/videos/{video_id}/frame/{time_seconds}
+```
+
+### HLS Streaming API (Alternative)
+
+**Get HLS Master Playlist:**
+
+```bash
+GET /api/v1/videos/{video_id}/hls/playlist.m3u8
+```
+
+**Get Quality-Specific Playlist:**
+
+```bash
+GET /api/v1/videos/{video_id}/hls/{quality}/playlist.m3u8
+```
+
+**Get HLS Segment:**
+
+```bash
+GET /api/v1/videos/{video_id}/hls/{quality}/{segment}
+```
+
+**Get Timeline Thumbnail:**
+
+```bash
+GET /api/v1/videos/{video_id}/hls/thumbnails/{timestamp}.jpg
+```
+
+**Generate HLS Stream:**
+
+```bash
+POST /api/v1/videos/{video_id}/hls/generate
+```
+
+### Video Chunking API
+
+**Get Video Chunks:**
+
+```bash
+GET /api/v1/videos/{video_id}/chunks
+```
+
+**Get Specific Chunk:**
+
+```bash
+GET /api/v1/videos/{video_id}/chunks/{chunk_id}
+```
+
+**Stream Video Chunk:**
+
+```bash
+GET /api/v1/videos/{video_id}/chunks/{chunk_id}/stream
+```
+
+### GraphQL API
 
 **Get All Videos:**
 
@@ -453,20 +731,97 @@ mutation CreateAnnotation($input: CreateAnnotationInput!) {
 
 ## 🚨 Troubleshooting
 
-### TypeScript/Lint Errors in EnhancedVideoPlayer
+### WebM Streaming Issues
 
-If you see TypeScript errors in `EnhancedVideoPlayer.tsx`:
+**Video doesn't load with WebM:**
 
-**This is normal!** The errors occur because dependencies haven't been installed yet.
+```bash
+# Check if video stream endpoint works
+curl -I http://localhost:8000/api/v1/videos/{video_id}/stream
 
-**Solution:**
+# Check if video file exists
+ls -la videos/demo_video.webm
+```
+
+**Seeking issues with WebM:**
+
+- Ensure video has proper keyframes for seeking
+- Check if range requests are supported
+- Try refreshing the page
+
+**Fallback to HLS streaming:**
+
+```bash
+USE_HLS=true ./scripts/start-demo.sh
+```
+
+### HLS Streaming Issues (Alternative)
+
+**Video doesn't load with HLS:**
+
+```bash
+# Check if HLS stream exists
+curl http://localhost:8000/api/v1/videos/{video_id}/hls/playlist.m3u8
+
+# Generate HLS stream if missing
+curl -X POST http://localhost:8000/api/v1/videos/{video_id}/hls/generate
+```
+
+**HLS quality selector not showing:**
+
+- Ensure HLS stream has multiple quality levels
+- Check browser console for HLS.js errors
+- Try refreshing the page
+
+**Fallback to basic chunking:**
+
+```bash
+USE_HLS=false ./scripts/start-demo.sh
+```
+
+### Video Processing Issues
+
+**FFmpeg not found:**
+
+```bash
+# Install FFmpeg
+brew install ffmpeg  # macOS
+apt install ffmpeg   # Ubuntu
+```
+
+**Video chunking fails:**
+
+- Check if video file exists in `backend-fastapi/videos/`
+- Verify FFmpeg can read the video file
+- Check database connection
+
+**Frame previews not loading:**
+
+- Ensure video chunks exist
+- Check if thumbnail generation completed
+- Verify API endpoints are accessible
+- Check WebM video format compatibility
+
+### TypeScript/Lint Errors
+
+**HLS Video Player errors:**
 
 ```bash
 cd frontend
 npm install
 ```
 
-All errors will disappear after installation.
+**Missing dependencies:**
+
+```bash
+npm install hls.js video.js @types/video.js
+```
+
+**WebM Player errors:**
+
+- Check if WebM format is supported in browser
+- Verify video streaming endpoint is accessible
+- Check console for range request errors
 
 ### Port Conflicts
 
@@ -535,12 +890,15 @@ This project is licensed under the MIT License.
 
 ## 📚 Documentation
 
-Comprehensive documentation is available in the project root:
+Comprehensive documentation is available in the `docs/` folder:
 
-- **QUICK_START.md** - Get started in 3 steps
-- **INSIDER_THREAT_VIDEO_LIBRARY_SPEC.md** - Complete functional specification
-- **IMPLEMENTATION_GUIDE.md** - Technical implementation details
-- **VIDEO_STORAGE_GUIDE.md** - Best practices for video storage and scaling
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** - Get started in 3 steps
+- **[docs/CUSTOM_VIDEO_GUIDE.md](docs/CUSTOM_VIDEO_GUIDE.md)** - How to use your own videos
+- **[docs/YOUTUBE_LIKE_PLAYER_GUIDE.md](docs/YOUTUBE_LIKE_PLAYER_GUIDE.md)** - YouTube-like features guide
+- **[docs/VIDEO_STREAMING_COMPARISON.md](docs/VIDEO_STREAMING_COMPARISON.md)** - Streaming technology comparison
+- **[docs/VIDEO_STORAGE_GUIDE.md](docs/VIDEO_STORAGE_GUIDE.md)** - Best practices for video storage and scaling
+- **[docs/IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md)** - Technical implementation details
+- **[docs/INSIDER_THREAT_VIDEO_LIBRARY_SPEC.md](docs/INSIDER_THREAT_VIDEO_LIBRARY_SPEC.md)** - Complete functional specification
 
 ## 🆘 Support
 
@@ -608,6 +966,58 @@ For support and questions:
 
 ---
 
-**Built for security analysts investigating insider threats**  
-**Tech Stack:** React 19 + Next.js 15 + FastAPI + GraphQL + PostgreSQL  
-**Focus:** Frame-accurate analysis, high-speed review, efficient workflow
+## 🎉 Project Summary
+
+**YouTube-like Video Player with WebM Streaming** - A professional video analysis platform featuring:
+
+### ✅ **Completed Features**
+
+- **WebM Streaming**: HTTP Range Request streaming with smooth seeking
+- **YouTube-like Player**: Frame preview on timeline hover, timeline click selection
+- **Green Interval Highlighting**: Visual feedback for annotation selection
+- **Video Chunking**: Configurable chunking for large video files
+- **Professional Streaming**: Efficient video delivery without shaking
+- **Frame-accurate Navigation**: Precise video analysis capabilities
+- **30+ Keyboard Shortcuts**: Professional video analysis workflow
+- **Annotation System**: Timeline click selection with visual feedback
+- **Multiple Streaming Options**: WebM (current default), HLS, and basic chunking
+- **Clean UI**: No red markers or visual artifacts
+
+### 🚀 **Quick Start**
+
+```bash
+# One-command demo setup
+./scripts/start-demo.sh
+
+# Access the application
+# Frontend: http://localhost:3000
+# API Docs: http://localhost:8000/docs
+```
+
+### 🔧 **Configuration**
+
+```bash
+# WebM streaming (current default)
+./scripts/start-demo.sh
+
+# HLS streaming (alternative)
+USE_HLS=true ./scripts/start-demo.sh
+
+# Basic chunking (educational)
+USE_HLS=false ./scripts/start-demo.sh
+
+# Custom chunk duration
+CHUNK_DURATION=60 ./scripts/start-demo.sh
+```
+
+### 📚 **Documentation**
+
+- **YOUTUBE_LIKE_PLAYER_GUIDE.md** - Complete feature guide
+- **VIDEO_STREAMING_COMPARISON.md** - HLS vs Basic chunking comparison
+- **API Documentation** - Complete API reference
+
+---
+
+**Built for professional video analysis and streaming**  
+**Tech Stack:** React 19 + Next.js 15 + FastAPI + WebM + PostgreSQL  
+**Focus:** YouTube-like experience, smooth seeking, timeline click selection, frame-accurate analysis
