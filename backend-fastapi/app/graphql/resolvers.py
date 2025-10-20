@@ -319,3 +319,21 @@ async def get_production_videos() -> List[Video]:
             )
             for video in videos
         ]
+
+
+async def delete_annotation(id: strawberry.ID) -> bool:
+    """Delete an annotation by ID"""
+    async for db in get_db():
+        result = await db.execute(
+            select(AnnotationModel)
+            .where(AnnotationModel.id == UUID(id))
+            .where(AnnotationModel.isActive == True)
+        )
+        annotation = result.scalar_one_or_none()
+        
+        if annotation:
+            # Soft delete - set isActive to False
+            annotation.isActive = False
+            await db.commit()
+            return True
+        return False

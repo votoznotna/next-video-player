@@ -7,7 +7,7 @@ from uuid import UUID
 from datetime import datetime
 
 from app.graphql.types import Video, Annotation, CreateAnnotationInput
-from app.graphql.resolvers import get_videos, get_video, get_annotations_by_video, create_annotation, get_production_videos
+from app.graphql.resolvers import get_videos, get_video, get_annotations_by_video, create_annotation, get_production_videos, delete_annotation
 
 
 @strawberry.type
@@ -29,6 +29,10 @@ class Mutation:
     create_annotation: Annotation = strawberry.field(
         resolver=create_annotation,
         name="createAnnotation"
+    )
+    remove_annotation: bool = strawberry.field(
+        resolver=delete_annotation,
+        name="removeAnnotation"
     )
 
 

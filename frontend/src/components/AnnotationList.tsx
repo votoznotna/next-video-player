@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Clock, Play } from 'lucide-react';
+import { Clock, Play, Trash2 } from 'lucide-react';
 import { Annotation } from '@/types';
 import { formatDuration } from '@/lib/utils';
+import { useMutation } from '@apollo/client';
+import { DELETE_ANNOTATION } from '@/graphql/queries';
 
 interface AnnotationListProps {
   annotations: Annotation[];
@@ -20,6 +22,26 @@ export default function AnnotationList({
   onSeekToTime,
   selectedAnnotationId,
 }: AnnotationListProps) {
+  const [deleteAnnotation, { loading: deleteLoading }] = useMutation(DELETE_ANNOTATION, {
+    refetchQueries: ['GetAnnotationsByVideo'],
+    onError: (error) => {
+      console.error('Error deleting annotation:', error);
+    },
+  });
+
+  const handleDeleteAnnotation = async (annotationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (window.confirm('Are you sure you want to delete this annotation?')) {
+      try {
+        await deleteAnnotation({
+          variables: { id: annotationId }
+        });
+      } catch (error) {
+        console.error('Failed to delete annotation:', error);
+      }
+    }
+  };
   // Simple selection logic - just use the selectedAnnotationId directly
   const isAnnotationSelected = (annotation: Annotation) => {
     const isSelected = selectedAnnotationId === annotation.id;
@@ -99,16 +121,27 @@ export default function AnnotationList({
                   </div>
                 </div>
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSeekToTime(annotation.startTime);
-                  }}
-                  className='ml-4 p-2 text-gray-400 hover:text-blue-600 transition-colors'
-                  title='Jump to start'
-                >
-                  <Play size={16} />
-                </button>
+                <div className='flex items-center space-x-2'>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSeekToTime(annotation.startTime);
+                    }}
+                    className='p-2 text-gray-400 hover:text-blue-600 transition-colors'
+                    title='Jump to start'
+                  >
+                    <Play size={16} />
+                  </button>
+                  
+                  <button
+                    onClick={(e) => handleDeleteAnnotation(annotation.id, e)}
+                    disabled={deleteLoading}
+                    className='p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50'
+                    title='Delete annotation'
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
 
               {/* Progress bar for selected annotation */}
