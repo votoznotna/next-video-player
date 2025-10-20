@@ -4,7 +4,29 @@ This guide shows you how to use your own video files with the YouTube-like video
 
 ## 🚀 **Quick Setup with Your Own Video**
 
-### **Method 1: Replace Demo Video (Easiest)**
+### **Method 1: Production Video Setup (Recommended)**
+
+1. **Place your video file** in the `videos/production/` directory:
+
+   ```bash
+   cp /path/to/your/video.webm videos/production/your_video.webm
+   ```
+
+2. **Run the production demo script** to automatically chunk your video:
+
+   ```bash
+   ./scripts/production-demo.sh
+   ```
+
+3. **Your video will be automatically**:
+   - ✅ Chunked into 5-minute segments (production-ready)
+   - ✅ WebM format with VP9 codec
+   - ✅ HTTP Range Request streaming enabled
+   - ✅ Metadata stored in database
+   - ✅ Frame previews enabled
+   - ✅ Ready to play with production features
+
+### **Method 2: Legacy Demo Setup (Educational)**
 
 1. **Place your video file** in the `videos/` directory:
 
@@ -12,7 +34,7 @@ This guide shows you how to use your own video files with the YouTube-like video
    cp /path/to/your/video.mp4 videos/demo_video.mp4
    ```
 
-2. **Run the demo script** to automatically chunk your video:
+2. **Run the legacy demo script** to automatically chunk your video:
 
    ```bash
    ./scripts/start-demo.sh
@@ -20,9 +42,10 @@ This guide shows you how to use your own video files with the YouTube-like video
 
 3. **Your video will be automatically**:
    - ✅ Chunked into 2-minute segments
+   - ✅ MP4 format with H.264 codec
+   - ✅ Basic streaming
    - ✅ Metadata stored in database
    - ✅ Frame previews enabled
-   - ✅ Ready to play with YouTube-like features
 
 ### **Method 2: Add New Video via API**
 

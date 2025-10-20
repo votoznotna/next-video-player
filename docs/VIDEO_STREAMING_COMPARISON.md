@@ -15,18 +15,19 @@ I started with a **manual chunking approach** for several reasons:
 
 You're absolutely right to question this! Here's why **HLS libraries are superior** for production:
 
-## Comparison: Basic Chunking vs. HLS Libraries
+## Comparison: WebM Streaming vs. HLS Libraries vs. Basic Chunking
 
-| Feature                  | Basic Chunking         | HLS Libraries                   |
-| ------------------------ | ---------------------- | ------------------------------- |
-| **Adaptive Bitrate**     | ❌ Fixed quality       | ✅ Automatic quality adjustment |
-| **Browser Support**      | ⚠️ Limited             | ✅ Universal support            |
-| **Performance**          | ⚠️ Manual optimization | ✅ Optimized for streaming      |
-| **Standards Compliance** | ❌ Custom format       | ✅ Industry standard            |
-| **CDN Integration**      | ❌ Difficult           | ✅ Built-in support             |
-| **Mobile Optimization**  | ❌ Poor                | ✅ Excellent                    |
-| **Seeking Performance**  | ⚠️ Slow                | ✅ Fast                         |
-| **Bandwidth Efficiency** | ⚠️ Poor                | ✅ Excellent                    |
+| Feature                  | WebM + Range Requests (Current) | HLS Libraries (Available) | Basic Chunking (Legacy) |
+| ------------------------ | ------------------------------- | ------------------------- | ----------------------- |
+| **Adaptive Bitrate**     | ❌ Fixed quality                | ✅ Automatic quality      | ❌ Fixed quality        |
+| **Browser Support**      | ✅ Excellent                    | ✅ Universal support      | ⚠️ Limited              |
+| **Performance**          | ✅ Optimized for seeking        | ✅ Optimized for streaming| ⚠️ Manual optimization  |
+| **Standards Compliance** | ✅ Web standard                 | ✅ Industry standard      | ❌ Custom format        |
+| **CDN Integration**      | ✅ Good                         | ✅ Built-in support       | ❌ Difficult            |
+| **Mobile Optimization**  | ✅ Good                         | ✅ Excellent              | ❌ Poor                 |
+| **Seeking Performance**  | ✅ Excellent (Range Requests)   | ✅ Fast                   | ⚠️ Slow                 |
+| **Bandwidth Efficiency** | ✅ Good                         | ✅ Excellent              | ⚠️ Poor                 |
+| **Production Ready**     | ✅ Yes (Current Implementation) | ✅ Yes (Available)        | ❌ Educational only     |
 
 ## Enhanced Implementation with HLS
 

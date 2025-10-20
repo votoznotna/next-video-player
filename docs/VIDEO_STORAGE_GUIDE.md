@@ -6,11 +6,12 @@ This guide provides recommendations for storing video files in development and p
 
 ## Current Implementation
 
-**Storage:** Local filesystem (`/videos/` directory)  
-**Metadata:** PostgreSQL 15 database  
+**Storage:** Local filesystem (`/videos/production/` directory)  
+**Video Format:** WebM (VP9 codec) with 5-minute chunks  
+**Metadata:** PostgreSQL 15 database with chunk information  
 **Backend:** FastAPI with Strawberry GraphQL  
-**Serving:** Static file serving via FastAPI  
-**Status:** ✅ Good for development and small-scale deployments
+**Serving:** HTTP Range Request streaming via FastAPI  
+**Status:** ✅ Production-ready for security footage analysis
 
 ## Why NOT to Store Videos in Databases
 
