@@ -671,9 +671,10 @@ const ProductionVideoPlayer = forwardRef<
                 <div
                   className='absolute bg-black bg-opacity-90 text-white p-2 rounded-lg shadow-lg z-20'
                   style={{
-                    left: `${Math.max(5, Math.min(95, previewPosition))}%`,
-                    transform: 'translateX(-50%)',
+                    left: `${previewPosition}%`,
+                    transform: previewPosition > 85 ? 'translateX(-100%)' : previewPosition < 15 ? 'translateX(0%)' : 'translateX(-50%)',
                     bottom: '30px',
+                    minWidth: '192px', // Ensure minimum width (w-48 = 192px)
                   }}
                 >
                   {framePreview ? (
