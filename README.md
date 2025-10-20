@@ -25,6 +25,10 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **Clean UI**: No navigation buttons or visual artifacts
 - **Playback Speed Preservation**: Speed settings maintained across chunk transitions
 - **Always-Visible Cursor**: White cursor remains visible during timeline hover
+- **Add Annotation Button**: Prominent green button for creating new annotations
+- **Delete Annotation Support**: Full CRUD operations with confirmation dialogs
+- **Vertical Button Layout**: Delete button positioned below play button for better UX
+- **Enhanced Annotation Management**: Complete annotation lifecycle with backend support
 
 **Recommended Enhancements:**
 
@@ -58,6 +62,8 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **Case Management**: Support for case IDs and source type tracking
 - **Chunk-based Timeline**: Timeline spans across multiple video chunks with accurate time mapping
 - **Production Annotations**: Annotations work across chunk boundaries with global time references
+- **Annotation CRUD Operations**: Create, read, update, and delete annotations with full backend support
+- **Confirmation Dialogs**: Safe deletion with user confirmation prompts
 - **Single Page Application**: Streamlined interface with no navigation clutter
 
 **Available but Not Implemented:**
@@ -591,12 +597,14 @@ The application features a professional YouTube-like video player with:
 - ✅ Auto-hide controls
 - ✅ Annotation markers on timeline
 
-### 🔄 Phase 2: Annotation System (Next)
+### ✅ Phase 2: Annotation System (COMPLETE)
 
-- ⏳ Annotation dialog component
-- ⏳ Annotation panel with filtering
-- ⏳ GraphQL integration for CRUD
-- ⏳ Annotation search functionality
+- ✅ Annotation dialog component (AddAnnotationForm)
+- ✅ Annotation panel with filtering (AnnotationList)
+- ✅ GraphQL integration for CRUD (CREATE, DELETE mutations)
+- ✅ Add/Delete annotation functionality
+- ✅ Confirmation dialogs for safe deletion
+- ✅ Vertical button layout for better UX
 
 ### 📋 Phase 3: Timeline Enhancement (Planned)
 
@@ -619,18 +627,24 @@ The application features a professional YouTube-like video player with:
 - ⏳ Shared timeline view
 - ⏳ Independent controls
 
-**Overall Progress:** 20% complete (Phase 1 of 5)
+**Overall Progress:** 40% complete (Phase 1 & 2 of 5)
 
 ### Creating Annotations
 
-**Current:** Click on timeline to mark incidents (basic functionality)
+**Current Implementation:**
 
-**Coming in Phase 2:**
+1. **Add Annotation Button**: Click the green "Add Annotation" button above the annotation list
+2. **Annotation Form**: Fill in title, description, type, and timing in the modal dialog
+3. **Current Time Integration**: Form automatically uses current video time as starting point
+4. **Save and Display**: Annotation appears in the list with proper styling
+5. **Timeline Integration**: Annotations work with timeline click selection
 
-1. Press `Shift + M` or `1-5` for quick marks
-2. Fill in annotation dialog (type, severity, description)
-3. Add tags for categorization
-4. Save and see on timeline
+**Annotation Management:**
+
+- **Create**: Green "Add Annotation" button with modal form
+- **Read**: View all annotations in the right sidebar
+- **Delete**: Red trash icon with confirmation dialog
+- **Timeline Selection**: Click timeline to select corresponding annotations
 
 ### Exporting Evidence Clips
 
