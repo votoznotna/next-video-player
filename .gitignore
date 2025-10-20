@@ -102,6 +102,7 @@ videos/chunks/
 videos/hls/
 videos/thumbnails/
 videos/sprites/
+videos/production/
 
 # Video processing temporary files
 *.tmp

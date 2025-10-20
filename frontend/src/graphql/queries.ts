@@ -123,3 +123,103 @@ export const DELETE_ANNOTATION = gql`
     removeAnnotation(id: $id)
   }
 `;
+
+export const GET_PRODUCTION_VIDEOS = gql`
+  query GetProductionVideos {
+    productionVideos {
+      id
+      title
+      description
+      filename
+      originalName
+      mimeType
+      size
+      duration
+      totalDuration
+      caseId
+      sourceType
+      views
+      isActive
+      isProduction
+      createdAt
+      updatedAt
+      chunks {
+        id
+        filename
+        startTime
+        endTime
+        duration
+        chunkIndex
+        size
+        fps
+        width
+        height
+        isActive
+        createdAt
+        updatedAt
+      }
+      annotations {
+        id
+        title
+        description
+        startTime
+        endTime
+        type
+        color
+        isActive
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+export const GET_VIDEO_WITH_CHUNKS = gql`
+  query GetVideoWithChunks($id: ID!) {
+    video(id: $id) {
+      id
+      title
+      description
+      filename
+      originalName
+      mimeType
+      size
+      duration
+      totalDuration
+      caseId
+      sourceType
+      views
+      isActive
+      isProduction
+      createdAt
+      updatedAt
+      chunks {
+        id
+        filename
+        startTime
+        endTime
+        duration
+        chunkIndex
+        size
+        fps
+        width
+        height
+        isActive
+        createdAt
+        updatedAt
+      }
+      annotations {
+        id
+        title
+        description
+        startTime
+        endTime
+        type
+        color
+        isActive
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;

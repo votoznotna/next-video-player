@@ -26,6 +26,10 @@ class Video(Base):
     duration = Column(Float, nullable=False)  # Duration in seconds
     views = Column(Integer, default=0)
     isActive = Column(Boolean, default=True)
+    isProduction = Column(Boolean, default=False)  # True for 5-minute chunks, False for demo
+    totalDuration = Column(Float)  # Total duration across all chunks for production videos
+    caseId = Column(String(100))  # Case identifier for production videos
+    sourceType = Column(String(50))  # Source type (NFS, S3, etc.)
     createdAt = Column(DateTime(timezone=True), server_default=func.now())
     updatedAt = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     

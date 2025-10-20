@@ -1,14 +1,10 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
+import { Video } from '@/types';
 
 interface SimpleSeekingPlayerProps {
-  video: {
-    id: string;
-    title: string;
-    duration: number;
-    url: string;
-  };
+  video: Video;
 }
 
 export default function SimpleSeekingPlayer({

@@ -8,6 +8,24 @@ from datetime import datetime
 
 
 @strawberry.type
+class VideoChunk:
+    id: strawberry.ID
+    video_id: strawberry.ID = strawberry.field(name="videoId")
+    chunk_index: int = strawberry.field(name="chunkIndex")
+    filename: str
+    start_time: float = strawberry.field(name="startTime")
+    end_time: float = strawberry.field(name="endTime")
+    duration: float
+    size: int
+    fps: Optional[float]
+    width: Optional[int]
+    height: Optional[int]
+    is_active: bool = strawberry.field(name="isActive")
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
+
+
+@strawberry.type
 class Video:
     id: strawberry.ID
     title: str
@@ -19,9 +37,14 @@ class Video:
     duration: float
     views: int
     is_active: bool = strawberry.field(name="isActive")
+    is_production: bool = strawberry.field(name="isProduction")
+    total_duration: Optional[float] = strawberry.field(name="totalDuration")
+    case_id: Optional[str] = strawberry.field(name="caseId")
+    source_type: Optional[str] = strawberry.field(name="sourceType")
     created_at: datetime = strawberry.field(name="createdAt")
     updated_at: datetime = strawberry.field(name="updatedAt")
     annotations: List["Annotation"] = strawberry.field(default_factory=list)
+    chunks: List[VideoChunk] = strawberry.field(default_factory=list)
     
     @strawberry.field
     def file_url(self) -> str:

@@ -1,3 +1,20 @@
+export interface VideoChunk {
+  id: string;
+  filename: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  chunkIndex: number;
+  size: number;
+  fps?: number;
+  width?: number;
+  height?: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  url?: string; // Added for ProductionVideoPlayer compatibility
+}
+
 export interface Video {
   id: string;
   title: string;
@@ -7,11 +24,16 @@ export interface Video {
   mimeType: string;
   size: number;
   duration: number;
+  totalDuration?: number;
+  caseId?: string;
+  sourceType?: string;
   views: number;
   isActive: boolean;
+  isProduction?: boolean;
   createdAt: string;
   updatedAt: string;
   annotations?: Annotation[];
+  chunks?: VideoChunk[];
 }
 
 export interface Annotation {

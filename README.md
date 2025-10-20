@@ -1,24 +1,29 @@
-# YouTube-like Video Player with Frame Preview
+# Demo Video Player - Security Footage Analysis
 
 A professional video analysis platform featuring a YouTube-like player with frame preview on timeline hover, video chunking, and advanced video streaming capabilities. Built with React 19, Next.js 15, FastAPI, and PostgreSQL.
 
 ## 🎬 Demo
 
-![YouTube-like Video Player Demo](video-player-demo.gif)
+![YouTube-like Video Player Demo](production-video-player-demo.gif)
 
 _Timeline click selection, green interval highlighting, frame preview on hover, and smooth seeking_
 
 ## 🎉 Latest Updates (Current Version)
 
-### ✅ **Fully Working YouTube-like Player**
+### ✅ **Demo Video Player - Single Page Application**
 
+- **Streamlined Interface**: Single page with "Demo (Video Player)" title
+- **Security Footage Demo**: "Demo Security Footage - Case ABC-123" video
+- **5-Minute Video Chunks**: Handles real-world production scenarios with NFS-stored chunks
+- **Seamless Chunk Transitions**: Automatic switching between 5-minute video files
 - **Timeline Click Selection**: Click anywhere on timeline to select annotations
 - **Green Interval Highlighting**: Visual feedback showing selected annotation intervals
 - **Smooth Seeking**: Instant video seeking without shaking or freezing
-- **Clean UI**: No red markers or visual artifacts
-- **Stable Performance**: All selections work consistently after first click
+- **Clean UI**: No navigation buttons or visual artifacts
 - **WebM Support**: Optimized video format for web streaming
 - **Range Request Streaming**: Efficient video delivery with HTTP range requests
+- **Playback Speed Preservation**: Speed settings maintained across chunk transitions
+- **Always-Visible Cursor**: White cursor remains visible during timeline hover
 
 ## 🎯 Key Features
 
@@ -32,6 +37,17 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **Smooth Timeline Navigation**: Click anywhere on timeline to seek instantly without shaking
 - **WebM Video Support**: Optimized video format for web streaming with range requests
 - **Custom Video Support**: Easy integration of your own video files
+
+### Demo Video Player Features
+
+- **5-Minute Video Chunks**: Handles real-world production scenarios with NFS-stored video files
+- **Seamless Chunk Transitions**: Automatic switching between 5-minute video files during playback
+- **Production Database**: PostgreSQL stores chunk metadata with start/end times and file locations
+- **NFS Integration**: Simulates Network File System storage for production environments
+- **Case Management**: Support for case IDs and source type tracking
+- **Chunk-based Timeline**: Timeline spans across multiple video chunks with accurate time mapping
+- **Production Annotations**: Annotations work across chunk boundaries with global time references
+- **Single Page Application**: Streamlined interface with no navigation clutter
 
 ### Advanced Video Features
 
@@ -93,6 +109,12 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 
 ```bash
 ./scripts/start-demo.sh
+```
+
+**Start the demo with 5-minute chunks:**
+
+```bash
+./scripts/production-demo.sh
 ```
 
 This single command will:
@@ -264,11 +286,11 @@ video-player/
 ├── frontend/                 # Next.js 15 application
 │   ├── src/
 │   │   ├── app/             # App Router pages
+│   │   │   └── page.tsx     # Single demo page
 │   │   ├── components/      # React components
-│   │   │   ├── YouTubeLikePlayer.tsx (main player with WebM streaming)
-│   │   │   ├── HLSVideoPlayer.tsx (HLS streaming)
-│   │   │   ├── SimpleSeekingPlayer.tsx (basic seeking)
-│   │   │   ├── EnhancedVideoPlayer.tsx (legacy)
+│   │   │   ├── ProductionVideoPlayer.tsx (main demo player with WebM streaming)
+│   │   │   ├── ProductionVideoPage.tsx (demo page component)
+│   │   │   ├── AnnotationList.tsx (annotation sidebar)
 │   │   │   └── VideoCard.tsx
 │   │   ├── hooks/          # Custom React hooks
 │   │   │   └── useKeyboardShortcuts.ts
@@ -281,33 +303,34 @@ video-player/
 │   ├── app/
 │   │   ├── api/            # API endpoints
 │   │   │   └── api_v1/endpoints/
-│   │   │       ├── video_stream.py (WebM streaming with range requests)
-│   │   │       ├── hls.py (HLS streaming)
-│   │   │       ├── video_chunks.py (chunking)
-│   │   │       └── videos.py
+│   │   │       ├── production_videos.py (WebM streaming with range requests)
+│   │   │       ├── videos.py (video management)
+│   │   │       └── annotations.py (annotation management)
 │   │   ├── services/       # Business logic
-│   │   │   ├── hls_service.py (HLS generation)
 │   │   │   ├── video_processing.py (chunking)
-│   │   │   └── video_service.py
+│   │   │   ├── video_service.py
+│   │   │   └── annotation_service.py
 │   │   ├── models/         # Database models
 │   │   │   ├── video_chunk.py (chunk metadata)
-│   │   │   └── video.py
+│   │   │   ├── video.py
+│   │   │   └── annotation.py
 │   │   ├── schemas/        # Pydantic schemas
 │   │   └── main.py         # Application entry
 │   ├── requirements.txt
 │   └── seed.py             # Database seeding
 ├── scripts/                # Management scripts
 │   ├── start-demo.sh      # Complete demo setup
-│   ├── demo-setup.sh      # Advanced demo setup
+│   ├── production-demo.sh # Demo with 5-minute chunks
 │   ├── start.sh           # Start all services
 │   ├── stop.sh            # Stop all services
 │   ├── seed.sh            # Seed database
 │   └── clean.sh           # Clean everything
 ├── videos/                 # Video storage (gitignored - generated by scripts)
-│   ├── demo_video.webm    # Main demo video (WebM format)
-│   ├── hls/               # HLS streams (generated)
-│   ├── chunks/            # Video chunks (MP4 for frame extraction, generated)
-│   └── thumbnails/        # Generated thumbnails
+│   ├── production/        # Production video chunks (WebM format)
+│   │   ├── production_chunk_000.webm
+│   │   ├── production_chunk_001.webm
+│   │   └── ... (6 chunks total)
+│   └── demo_video.webm    # Legacy demo video (WebM format)
 ├── docker-compose.dev.yml  # Development config
 ├── docker-compose.yml      # Production config
 └── README.md
@@ -625,18 +648,18 @@ CREATE TABLE annotations (
 
 ## 🔌 API Documentation
 
-### WebM Streaming API (Current Default)
+### Production Video API (Current Default)
 
-**Stream Video with Range Requests:**
+**Stream Video Chunk with Range Requests:**
 
 ```bash
-GET /api/v1/videos/{video_id}/stream
+GET /api/v1/production/{filename}
 ```
 
-**Get Frame Preview:**
+**List Production Videos:**
 
 ```bash
-GET /api/v1/videos/{video_id}/frame/{time_seconds}
+GET /api/v1/production/
 ```
 
 ### HLS Streaming API (Alternative)
@@ -693,20 +716,30 @@ GET /api/v1/videos/{video_id}/chunks/{chunk_id}/stream
 
 ### GraphQL API
 
-**Get All Videos:**
+**Get Production Videos:**
 
 ```graphql
-query GetVideos {
-  videos {
+query GetProductionVideos {
+  productionVideos {
     id
     title
     duration
+    totalDuration
     caseId
+    sourceType
+    isProduction
+    chunks {
+      id
+      filename
+      startTime
+      endTime
+      duration
+      chunkIndex
+    }
     annotations {
       id
       title
       type
-      severity
       startTime
       endTime
     }
@@ -731,28 +764,28 @@ mutation CreateAnnotation($input: CreateAnnotationInput!) {
 
 ## 🚨 Troubleshooting
 
-### WebM Streaming Issues
+### Production Video Streaming Issues
 
-**Video doesn't load with WebM:**
+**Video doesn't load:**
 
 ```bash
-# Check if video stream endpoint works
-curl -I http://localhost:8000/api/v1/videos/{video_id}/stream
+# Check if production video endpoint works
+curl -I http://localhost:8000/api/v1/production/production_chunk_000.webm
 
-# Check if video file exists
-ls -la videos/demo_video.webm
+# Check if video files exist
+ls -la videos/production/
 ```
 
-**Seeking issues with WebM:**
+**Seeking issues:**
 
 - Ensure video has proper keyframes for seeking
-- Check if range requests are supported
+- Check if range requests are supported (should return 206 Partial Content)
 - Try refreshing the page
 
-**Fallback to HLS streaming:**
+**Test range request support:**
 
 ```bash
-USE_HLS=true ./scripts/start-demo.sh
+curl -v -H "Range: bytes=0-1023" http://localhost:8000/api/v1/production/production_chunk_000.webm
 ```
 
 ### HLS Streaming Issues (Alternative)
@@ -968,26 +1001,28 @@ For support and questions:
 
 ## 🎉 Project Summary
 
-**YouTube-like Video Player with WebM Streaming** - A professional video analysis platform featuring:
+**Demo Video Player - Security Footage Analysis** - A professional video analysis platform featuring:
 
 ### ✅ **Completed Features**
 
+- **Single Page Application**: Streamlined "Demo (Video Player)" interface
+- **Security Footage Demo**: "Demo Security Footage - Case ABC-123" video
 - **WebM Streaming**: HTTP Range Request streaming with smooth seeking
 - **YouTube-like Player**: Frame preview on timeline hover, timeline click selection
 - **Green Interval Highlighting**: Visual feedback for annotation selection
-- **Video Chunking**: Configurable chunking for large video files
+- **5-Minute Video Chunks**: Production-ready chunking for large video files
+- **Seamless Chunk Transitions**: Automatic switching between video files
 - **Professional Streaming**: Efficient video delivery without shaking
 - **Frame-accurate Navigation**: Precise video analysis capabilities
-- **30+ Keyboard Shortcuts**: Professional video analysis workflow
-- **Annotation System**: Timeline click selection with visual feedback
-- **Multiple Streaming Options**: WebM (current default), HLS, and basic chunking
-- **Clean UI**: No red markers or visual artifacts
+- **Playback Speed Preservation**: Speed settings maintained across chunk transitions
+- **Always-Visible Cursor**: White cursor remains visible during timeline hover
+- **Clean UI**: No navigation buttons or visual artifacts
 
 ### 🚀 **Quick Start**
 
 ```bash
-# One-command demo setup
-./scripts/start-demo.sh
+# One-command demo setup with 5-minute chunks
+./scripts/production-demo.sh
 
 # Access the application
 # Frontend: http://localhost:3000
@@ -997,17 +1032,11 @@ For support and questions:
 ### 🔧 **Configuration**
 
 ```bash
-# WebM streaming (current default)
+# Demo with 5-minute chunks (current default)
+./scripts/production-demo.sh
+
+# Legacy demo with 2-minute chunks
 ./scripts/start-demo.sh
-
-# HLS streaming (alternative)
-USE_HLS=true ./scripts/start-demo.sh
-
-# Basic chunking (educational)
-USE_HLS=false ./scripts/start-demo.sh
-
-# Custom chunk duration
-CHUNK_DURATION=60 ./scripts/start-demo.sh
 ```
 
 ### 📚 **Documentation**
@@ -1018,6 +1047,6 @@ CHUNK_DURATION=60 ./scripts/start-demo.sh
 
 ---
 
-**Built for professional video analysis and streaming**  
+**Built for professional security footage analysis and streaming**  
 **Tech Stack:** React 19 + Next.js 15 + FastAPI + WebM + PostgreSQL  
-**Focus:** YouTube-like experience, smooth seeking, timeline click selection, frame-accurate analysis
+**Focus:** Demo video player, smooth seeking, timeline click selection, chunk-based streaming

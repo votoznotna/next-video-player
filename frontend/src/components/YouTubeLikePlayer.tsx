@@ -242,7 +242,11 @@ const YouTubeLikePlayer = forwardRef<
           <video
             ref={videoRef}
             className='w-full h-auto'
-            src={`http://localhost:8000/api/v1/videos/${video.id}/stream`}
+            src={
+              video.isProduction
+                ? `http://localhost:8000/api/v1/videos/${video.id}/stream`
+                : `http://localhost:8000/videos/${video.filename}`
+            }
             preload='metadata'
             crossOrigin='anonymous'
           />

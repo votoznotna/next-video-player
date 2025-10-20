@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  FetchPolicy,
+} from '@apollo/client';
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/graphql',
@@ -31,7 +36,7 @@ export const apolloClient = new ApolloClient({
     },
     query: {
       errorPolicy: 'all',
-      fetchPolicy: 'cache-and-network',
+      fetchPolicy: 'cache-and-network' as FetchPolicy,
     },
   },
 });
