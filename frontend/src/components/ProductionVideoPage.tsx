@@ -324,6 +324,8 @@ const ProductionVideoPage: React.FC = () => {
                           handleClearAnnotationSelection
                         }
                         selectedAnnotationId={selectedAnnotationId}
+                        showVolumeControls={false}
+                        showSettingsControls={false}
                       />
                     </div>
 

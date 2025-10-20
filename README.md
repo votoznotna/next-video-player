@@ -29,6 +29,8 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **Delete Annotation Support**: Full CRUD operations with confirmation dialogs
 - **Vertical Button Layout**: Delete button positioned below play button for better UX
 - **Enhanced Annotation Management**: Complete annotation lifecycle with backend support
+- **Minimal Control Interface**: Volume and settings controls hidden by default for clean UI
+- **Optional Advanced Controls**: Volume and settings controls available via React props when needed
 
 **Recommended Enhancements:**
 
@@ -65,6 +67,8 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **Annotation CRUD Operations**: Create, read, update, and delete annotations with full backend support
 - **Confirmation Dialogs**: Safe deletion with user confirmation prompts
 - **Single Page Application**: Streamlined interface with no navigation clutter
+- **Clean Control Interface**: Volume and settings controls hidden by default for minimal UI
+- **Optional Props Configuration**: `showVolumeControls` and `showSettingsControls` props for advanced control access
 
 **Available but Not Implemented:**
 
@@ -548,44 +552,92 @@ The application features a professional YouTube-like video player with:
 - `Space` or `K` - Play/Pause
 - `J` - Rewind 10 seconds
 - `L` - Forward 10 seconds
-- `←` - Seek backward 5 seconds
-- `→` - Seek forward 5 seconds
-- `Shift + ←` - Seek backward 30 seconds
-- `Shift + →` - Seek forward 30 seconds
-- `Home` - Jump to start
-- `End` - Jump to end
+- `←` - Previous frame
+- `→` - Next frame
+- `Shift + ←` - Rewind 30 seconds
+- `Shift + →` - Forward 30 seconds
 
-**Speed Control:**
+**Audio:**
 
-- `[` - Decrease speed
-- `]` - Increase speed
-- Click speed indicator to select from menu
-
-**Frame Control:**
-
-- `,` (comma) - Previous frame
-- `.` (period) - Next frame
-
-**Volume:**
-
-- `↑` - Volume up
-- `↓` - Volume down
-- `M` - Mute/Unmute
+- `M` - Mute/Unmute (works even when volume controls are hidden)
 
 **View:**
 
 - `F` - Fullscreen
-- `G` - Go to timestamp (opens dialog)
 - `?` - Show keyboard shortcuts help
+- `Esc` - Close overlays
 
-**Annotations:**
+**Note:** Volume and settings controls are hidden by default for a clean interface. They can be enabled via React props (`showVolumeControls` and `showSettingsControls`) when needed.
 
-- `Shift + M` - Mark current position (opens dialog)
-- `1` - Quick mark: Critical Incident
-- `2` - Quick mark: Suspicious Activity
-- `3` - Quick mark: Policy Violation
-- `4` - Quick mark: Note
-- `5` - Quick mark: Evidence Marker
+## 🔧 ProductionVideoPlayer Component Configuration
+
+The `ProductionVideoPlayer` component supports optional props for controlling the visibility of advanced controls:
+
+### Props Interface
+
+```typescript
+interface ProductionVideoPlayerProps {
+  video: Video;
+  onTimeUpdate?: (time: number) => void;
+  onAnnotationClick?: (annotation: Annotation) => void;
+  onClearAnnotationSelection?: () => void;
+  selectedAnnotationId?: string;
+  showVolumeControls?: boolean; // Default: false
+  showSettingsControls?: boolean; // Default: false
+}
+```
+
+### Usage Examples
+
+**Default Configuration (Clean Interface):**
+
+```tsx
+<ProductionVideoPlayer
+  video={video}
+  onTimeUpdate={handleTimeUpdate}
+  onAnnotationClick={handleAnnotationClick}
+  onClearAnnotationSelection={handleClearAnnotationSelection}
+  selectedAnnotationId={selectedAnnotationId}
+  // showVolumeControls={false} (default)
+  // showSettingsControls={false} (default)
+/>
+```
+
+**With Volume Controls Only:**
+
+```tsx
+<ProductionVideoPlayer
+  video={video}
+  onTimeUpdate={handleTimeUpdate}
+  onAnnotationClick={handleAnnotationClick}
+  onClearAnnotationSelection={handleClearAnnotationSelection}
+  selectedAnnotationId={selectedAnnotationId}
+  showVolumeControls={true}
+  showSettingsControls={false}
+/>
+```
+
+**With All Controls:**
+
+```tsx
+<ProductionVideoPlayer
+  video={video}
+  onTimeUpdate={handleTimeUpdate}
+  onAnnotationClick={handleAnnotationClick}
+  onClearAnnotationSelection={handleClearAnnotationSelection}
+  selectedAnnotationId={selectedAnnotationId}
+  showVolumeControls={true}
+  showSettingsControls={true}
+/>
+```
+
+### Control Behavior
+
+- **`showVolumeControls={false}` (default)**: Volume slider and mute button are hidden
+- **`showVolumeControls={true}`**: Volume controls appear in the center control area
+- **`showSettingsControls={false}` (default)**: Playback speed selector is hidden
+- **`showSettingsControls={true}`**: Playback speed controls appear in the center control area
+- **Mute functionality**: The `M` key always works for mute/unmute, regardless of control visibility
 
 ## 📊 Implementation Status
 

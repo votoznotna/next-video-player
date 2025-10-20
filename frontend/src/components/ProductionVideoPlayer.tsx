@@ -10,6 +10,17 @@ import React, {
 import { useQuery } from '@apollo/client';
 import { GET_VIDEOS, GET_ANNOTATIONS_BY_VIDEO } from '../graphql/queries';
 import { Annotation, Video, VideoChunk } from '@/types';
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Settings,
+  SkipBack,
+  SkipForward,
+  RotateCcw,
+  RotateCw,
+} from 'lucide-react';
 
 interface ProductionVideoPlayerProps {
   video: Video;
@@ -17,6 +28,8 @@ interface ProductionVideoPlayerProps {
   onAnnotationClick?: (annotation: Annotation) => void;
   onClearAnnotationSelection?: () => void;
   selectedAnnotationId?: string;
+  showVolumeControls?: boolean;
+  showSettingsControls?: boolean;
 }
 
 export interface ProductionVideoPlayerRef {
@@ -36,6 +49,8 @@ const ProductionVideoPlayer = forwardRef<
       onAnnotationClick,
       onClearAnnotationSelection,
       selectedAnnotationId,
+      showVolumeControls = false,
+      showSettingsControls = false,
     },
     ref
   ) => {
@@ -63,6 +78,10 @@ const ProductionVideoPlayer = forwardRef<
     const [framePreview, setFramePreview] = useState<string | null>(null);
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const framePreviewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // UI state
+    const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
 
     // Fetch annotations
     const { data: annotationsData } = useQuery(GET_ANNOTATIONS_BY_VIDEO, {
@@ -546,8 +565,57 @@ const ProductionVideoPlayer = forwardRef<
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newVolume = parseFloat(e.target.value);
       setVolume(newVolume);
+      setIsMuted(newVolume === 0);
       if (videoRef.current) {
         videoRef.current.volume = newVolume;
+      }
+    };
+
+    const toggleMute = () => {
+      if (videoRef.current) {
+        if (isMuted) {
+          videoRef.current.volume = volume;
+          setIsMuted(false);
+        } else {
+          videoRef.current.volume = 0;
+          setIsMuted(true);
+        }
+      }
+    };
+
+    const handleSkipBackward = () => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.max(
+          0,
+          videoRef.current.currentTime - 10
+        );
+      }
+    };
+
+    const handleSkipForward = () => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.min(
+          videoRef.current.duration,
+          videoRef.current.currentTime + 10
+        );
+      }
+    };
+
+    const handleFrameBackward = () => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.max(
+          0,
+          videoRef.current.currentTime - 1 / 30
+        );
+      }
+    };
+
+    const handleFrameForward = () => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.min(
+          videoRef.current.duration,
+          videoRef.current.currentTime + 1 / 30
+        );
       }
     };
 
@@ -566,6 +634,74 @@ const ProductionVideoPlayer = forwardRef<
       const seconds = Math.floor(time % 60);
       return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
+
+    // Keyboard shortcuts
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLSelectElement
+        ) {
+          return; // Don't handle shortcuts when typing in inputs
+        }
+
+        switch (e.key.toLowerCase()) {
+          case ' ':
+          case 'k':
+            e.preventDefault();
+            togglePlay();
+            break;
+          case 'j':
+            e.preventDefault();
+            handleSkipBackward();
+            break;
+          case 'l':
+            e.preventDefault();
+            handleSkipForward();
+            break;
+          case 'arrowleft':
+            e.preventDefault();
+            if (e.shiftKey) {
+              handleSkipBackward();
+            } else {
+              handleFrameBackward();
+            }
+            break;
+          case 'arrowright':
+            e.preventDefault();
+            if (e.shiftKey) {
+              handleSkipForward();
+            } else {
+              handleFrameForward();
+            }
+            break;
+          case 'm':
+            e.preventDefault();
+            toggleMute();
+            break;
+          case 'f':
+            e.preventDefault();
+            if (videoRef.current) {
+              if (document.fullscreenElement) {
+                document.exitFullscreen();
+              } else {
+                videoRef.current.requestFullscreen();
+              }
+            }
+            break;
+          case '?':
+            e.preventDefault();
+            setShowKeyboardShortcuts(!showKeyboardShortcuts);
+            break;
+          case 'escape':
+            setShowKeyboardShortcuts(false);
+            break;
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isPlaying, isMuted, showKeyboardShortcuts]);
 
     return (
       <div className='w-full max-w-4xl mx-auto bg-black rounded-lg overflow-hidden shadow-2xl'>
@@ -587,12 +723,12 @@ const ProductionVideoPlayer = forwardRef<
 
           {/* Play/Pause Overlay */}
           {!isPlaying && (
-            <div className='absolute inset-0 flex items-center justify-center'>
+            <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-30'>
               <button
                 onClick={togglePlay}
-                className='bg-black bg-opacity-50 text-white p-4 rounded-full hover:bg-opacity-70 transition-all'
+                className='bg-white bg-opacity-20 backdrop-blur-sm text-white p-6 rounded-full hover:bg-opacity-30 transition-all duration-200 shadow-2xl border border-white border-opacity-20'
               >
-                ▶️
+                <Play size={32} className='ml-1' />
               </button>
             </div>
           )}
@@ -716,86 +852,283 @@ const ProductionVideoPlayer = forwardRef<
           </div>
 
           {/* Control Buttons */}
-          <div className='flex items-center justify-between px-4 pb-4'>
-            <div className='flex items-center space-x-4'>
+          <div className='flex items-center justify-between px-6 py-4 bg-gradient-to-r from-gray-800 to-gray-900'>
+            {/* Left Controls */}
+            <div className='flex items-center space-x-3'>
+              {/* Play/Pause Button */}
               <button
                 onClick={togglePlay}
-                className='text-white hover:text-blue-400'
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white p-2 rounded-full transition-all duration-200 border border-white border-opacity-20'
+                title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
               >
-                {isPlaying ? '⏸️' : '▶️'}
+                {isPlaying ? (
+                  <Pause size={20} />
+                ) : (
+                  <Play size={20} className='ml-0.5' />
+                )}
               </button>
 
-              <span className='text-white text-sm'>
+              {/* Skip Backward */}
+              <button
+                onClick={handleSkipBackward}
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white p-2 rounded-full transition-all duration-200 border border-white border-opacity-20'
+                title='Skip Backward 10s (J)'
+              >
+                <SkipBack size={18} />
+              </button>
+
+              {/* Skip Forward */}
+              <button
+                onClick={handleSkipForward}
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white p-2 rounded-full transition-all duration-200 border border-white border-opacity-20'
+                title='Skip Forward 10s (L)'
+              >
+                <SkipForward size={18} />
+              </button>
+
+              {/* Frame Backward */}
+              <button
+                onClick={handleFrameBackward}
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white p-2 rounded-full transition-all duration-200 border border-white border-opacity-20'
+                title='Previous Frame (←)'
+              >
+                <RotateCcw size={18} />
+              </button>
+
+              {/* Frame Forward */}
+              <button
+                onClick={handleFrameForward}
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white p-2 rounded-full transition-all duration-200 border border-white border-opacity-20'
+                title='Next Frame (→)'
+              >
+                <RotateCw size={18} />
+              </button>
+
+              {/* Time Display */}
+              <div className='ml-4 px-3 py-1 bg-black bg-opacity-30 rounded text-white text-sm font-mono border border-white border-opacity-20'>
                 {formatTime(currentTime)} /{' '}
                 {formatTime(video.totalDuration || duration)}
-              </span>
+              </div>
 
-              <span className='text-white text-sm'>
+              {/* Chunk Info */}
+              <div className='px-3 py-1 bg-blue-600 bg-opacity-20 rounded text-blue-300 text-sm font-medium border border-blue-500 border-opacity-30'>
                 Chunk{' '}
                 {currentChunk?.chunkIndex !== undefined
                   ? currentChunk.chunkIndex + 1
                   : currentChunkIndex + 1}
                 /{video.chunks?.length || 0}
-                {currentChunk && (
-                  <span className='text-gray-400 ml-2'>
-                    ({formatTime(currentChunk.startTime)}-
-                    {formatTime(currentChunk.endTime)})
-                  </span>
-                )}
-              </span>
-
-              {/* Volume Control */}
-              <div className='flex items-center space-x-2'>
-                <span className='text-white text-sm'>🔊</span>
-                <input
-                  type='range'
-                  min='0'
-                  max='1'
-                  step='0.1'
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className='w-20'
-                />
               </div>
-
-              {/* Playback Speed */}
-              <select
-                value={playbackRate}
-                onChange={handlePlaybackRateChange}
-                className='bg-gray-700 text-white px-2 py-1 rounded text-sm'
-              >
-                <option value={0.25}>0.25x</option>
-                <option value={0.5}>0.5x</option>
-                <option value={0.75}>0.75x</option>
-                <option value={1}>1x</option>
-                <option value={1.25}>1.25x</option>
-                <option value={1.5}>1.5x</option>
-                <option value={2}>2x</option>
-                <option value={4}>4x</option>
-                <option value={8}>8x</option>
-              </select>
             </div>
 
-            {/* Annotation Selection Indicator */}
-            {selectedAnnotationId &&
-              annotations.length > 0 &&
-              (() => {
-                const selectedAnnotationIndex = annotations.findIndex(
-                  (ann: any) => ann.id === selectedAnnotationId
-                );
-                const selectedAnnotation = annotations[selectedAnnotationIndex];
-                if (selectedAnnotation) {
-                  return (
-                    <div className='text-green-400 text-sm font-medium'>
-                      Selected: {selectedAnnotation.title} (
-                      {selectedAnnotationIndex + 1}/{annotations.length})
-                    </div>
+            {/* Center Controls */}
+            <div className='flex items-center space-x-4'>
+              {/* Volume Control - Optional via props */}
+              {showVolumeControls && (
+                <div className='flex items-center space-x-2'>
+                  <button
+                    onClick={toggleMute}
+                    className='text-white hover:text-blue-400 transition-colors'
+                    title={isMuted ? 'Unmute (M)' : 'Mute (M)'}
+                  >
+                    {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </button>
+                  <input
+                    type='range'
+                    min='0'
+                    max='1'
+                    step='0.1'
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className='w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider'
+                    style={{
+                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(isMuted ? 0 : volume) * 100}%, #4b5563 ${(isMuted ? 0 : volume) * 100}%, #4b5563 100%)`,
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Playback Speed - Optional via props */}
+              {showSettingsControls && (
+                <div className='flex items-center space-x-2'>
+                  <span className='text-white text-sm font-medium'>Speed:</span>
+                  <select
+                    value={playbackRate}
+                    onChange={handlePlaybackRateChange}
+                    className='bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none text-sm'
+                  >
+                    <option value={0.25}>0.25x</option>
+                    <option value={0.5}>0.5x</option>
+                    <option value={0.75}>0.75x</option>
+                    <option value={1}>1x</option>
+                    <option value={1.25}>1.25x</option>
+                    <option value={1.5}>1.5x</option>
+                    <option value={2}>2x</option>
+                    <option value={4}>4x</option>
+                    <option value={8}>8x</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Right Controls */}
+            <div className='flex items-center space-x-3'>
+              {/* Keyboard Shortcuts Button */}
+              <button
+                onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white px-3 py-2 rounded transition-all duration-200 border border-white border-opacity-20 text-sm font-medium'
+                title='Keyboard Shortcuts (?)'
+              >
+                ?
+              </button>
+
+              {/* Fullscreen Button */}
+              <button
+                onClick={() => {
+                  if (videoRef.current) {
+                    if (document.fullscreenElement) {
+                      document.exitFullscreen();
+                    } else {
+                      videoRef.current.requestFullscreen();
+                    }
+                  }
+                }}
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white px-3 py-2 rounded transition-all duration-200 border border-white border-opacity-20 text-sm font-medium'
+                title='Fullscreen (F)'
+              >
+                ⛶
+              </button>
+
+              {/* Annotation Selection Indicator */}
+              {selectedAnnotationId &&
+                annotations.length > 0 &&
+                (() => {
+                  const selectedAnnotationIndex = annotations.findIndex(
+                    (ann: any) => ann.id === selectedAnnotationId
                   );
-                }
-                return null;
-              })()}
+                  const selectedAnnotation =
+                    annotations[selectedAnnotationIndex];
+                  if (selectedAnnotation) {
+                    return (
+                      <div className='px-3 py-1 bg-green-600 bg-opacity-20 rounded text-green-300 text-sm font-medium border border-green-500 border-opacity-30'>
+                        {selectedAnnotation.title} (
+                        {selectedAnnotationIndex + 1}/{annotations.length})
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+            </div>
           </div>
         </div>
+
+        {/* Keyboard Shortcuts Overlay */}
+        {showKeyboardShortcuts && (
+          <div className='absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50'>
+            <div className='bg-gray-900 rounded-lg p-6 max-w-2xl w-full mx-4 border border-gray-700'>
+              <div className='flex justify-between items-center mb-4'>
+                <h3 className='text-xl font-semibold text-white'>
+                  Keyboard Shortcuts
+                </h3>
+                <button
+                  onClick={() => setShowKeyboardShortcuts(false)}
+                  className='text-gray-400 hover:text-white text-2xl'
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
+                <div className='space-y-2'>
+                  <h4 className='text-white font-medium mb-2'>
+                    Playback Control
+                  </h4>
+                  <div className='space-y-1 text-gray-300'>
+                    <div className='flex justify-between'>
+                      <span>Play/Pause</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        Space
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Skip Backward 10s</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        J
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Skip Forward 10s</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        L
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Previous Frame</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        ←
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Next Frame</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        →
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Skip Backward 30s</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        Shift + ←
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Skip Forward 30s</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        Shift + →
+                      </kbd>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='space-y-2'>
+                  <h4 className='text-white font-medium mb-2'>Audio & View</h4>
+                  <div className='space-y-1 text-gray-300'>
+                    <div className='flex justify-between'>
+                      <span>Mute/Unmute</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        M
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Fullscreen</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        F
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Show Shortcuts</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        ?
+                      </kbd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Close Overlay</span>
+                      <kbd className='px-2 py-1 bg-gray-700 rounded text-xs'>
+                        Esc
+                      </kbd>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='mt-4 text-center text-gray-400 text-xs'>
+                Press{' '}
+                <kbd className='px-1 py-0.5 bg-gray-700 rounded text-xs'>
+                  Esc
+                </kbd>{' '}
+                to close
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
