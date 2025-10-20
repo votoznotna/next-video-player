@@ -10,20 +10,28 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 
 ## 🎉 Latest Updates (Current Version)
 
-### ✅ **Demo Video Player - Single Page Application**
+### ✅ **Demo Video Player - Production-Ready Implementation**
+
+**Current Implementation:**
 
 - **Streamlined Interface**: Single page with "Demo (Video Player)" title
 - **Security Footage Demo**: "Demo Security Footage - Case ABC-123" video
-- **5-Minute Video Chunks**: Handles real-world production scenarios with NFS-stored chunks
-- **Seamless Chunk Transitions**: Automatic switching between 5-minute video files
+- **WebM Streaming**: Direct video streaming with HTTP Range Request support
+- **5-Minute Video Chunks**: Production-ready chunking for NFS-stored video files
+- **Seamless Chunk Transitions**: Automatic switching between video files during playback
 - **Timeline Click Selection**: Click anywhere on timeline to select annotations
 - **Green Interval Highlighting**: Visual feedback showing selected annotation intervals
 - **Smooth Seeking**: Instant video seeking without shaking or freezing
 - **Clean UI**: No navigation buttons or visual artifacts
-- **WebM Support**: Optimized video format for web streaming
-- **Range Request Streaming**: Efficient video delivery with HTTP range requests
 - **Playback Speed Preservation**: Speed settings maintained across chunk transitions
 - **Always-Visible Cursor**: White cursor remains visible during timeline hover
+
+**Recommended Enhancements:**
+
+- **HLS.js Support**: Available but not implemented (hls.js package installed)
+- **Adaptive Bitrate**: Could be added for better mobile performance
+- **Thumbnail Previews**: Backend HLS service available for timeline thumbnails
+- **Multiple Quality Levels**: HLS infrastructure supports 360p/720p/1080p
 
 ## 🎯 Key Features
 
@@ -38,16 +46,26 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **WebM Video Support**: Optimized video format for web streaming with range requests
 - **Custom Video Support**: Easy integration of your own video files
 
-### Demo Video Player Features
+### Production Video Player Features
 
-- **5-Minute Video Chunks**: Handles real-world production scenarios with NFS-stored video files
-- **Seamless Chunk Transitions**: Automatic switching between 5-minute video files during playback
+**Current Implementation:**
+
+- **WebM Streaming**: Direct video streaming with HTTP Range Request support
+- **5-Minute Video Chunks**: Production-ready chunking for NFS-stored video files
+- **Seamless Chunk Transitions**: Automatic switching between video files during playback
 - **Production Database**: PostgreSQL stores chunk metadata with start/end times and file locations
 - **NFS Integration**: Simulates Network File System storage for production environments
 - **Case Management**: Support for case IDs and source type tracking
 - **Chunk-based Timeline**: Timeline spans across multiple video chunks with accurate time mapping
 - **Production Annotations**: Annotations work across chunk boundaries with global time references
 - **Single Page Application**: Streamlined interface with no navigation clutter
+
+**Available but Not Implemented:**
+
+- **HLS Streaming**: Backend HLS service available with adaptive bitrate support
+- **Multiple Quality Levels**: 360p, 720p, 1080p quality variants supported
+- **Thumbnail Sprites**: Timeline thumbnail previews available via HLS service
+- **10-Second Segments**: HLS segments for faster seeking (vs 5-minute chunks)
 
 ### Advanced Video Features
 
@@ -63,8 +81,10 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 
 ### Technical Stack
 
+**Current Implementation:**
+
 - **Frontend:** React 19 + Next.js 15 + TypeScript + Zustand
-- **Video Player:** HTML5 Video with Canvas-based frame preview + Range Request Streaming
+- **Video Player:** HTML5 Video with direct WebM streaming + HTTP Range Requests
 - **Video Format:** WebM (VP9) for optimal web streaming performance
 - **UI Components:** Radix UI (accessible, headless components)
 - **Backend:** FastAPI + Strawberry GraphQL
@@ -74,23 +94,54 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 - **State Management:** Zustand (lightweight, no boilerplate)
 - **Streaming:** HTTP Range Requests for efficient video delivery
 
+**Available but Not Used:**
+
+- **HLS.js:** Installed but not implemented in production player
+- **HLS Streaming:** Backend HLS service with adaptive bitrate support
+- **Multiple Quality Levels:** 360p, 720p, 1080p variants available
+- **Thumbnail Sprites:** Timeline preview system via HLS service
+
 ## 🏗️ Architecture
+
+### Current Production Video Player Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │   Frontend (Next.js 15 + React 19)                      │
-│   ├── Enhanced VideoPlayer Component                    │
-│   ├── Timeline with Canvas Rendering                    │
+│   ├── ProductionVideoPlayer Component                   │
+│   │   ├── WebM Streaming with Range Requests            │
+│   │   ├── 5-Minute Chunk Management                     │
+│   │   ├── Timeline Click Selection                      │
+│   │   └── Frame Preview on Hover                        │
+│   ├── ProductionVideoPage Component                     │
 │   ├── Annotation Management                             │
-│   └── Keyboard Shortcut System                          │
+│   └── GraphQL Integration                               │
 └─────────────────────────────────────────────────────────┘
-                            ↓ GraphQL
+                            ↓ GraphQL + HTTP Range Requests
 ┌─────────────────────────────────────────────────────────┐
 │   Backend (FastAPI + Strawberry GraphQL)                │
-│   ├── Video Management API                              │
+│   ├── Production Video API (/api/v1/production/)        │
+│   │   ├── HTTP Range Request Support                    │
+│   │   └── WebM Chunk Streaming                          │
+│   ├── GraphQL Schema (productionVideos query)           │
+│   ├── Video Chunk Management                            │
 │   ├── Annotation CRUD Operations                        │
-│   ├── Export Service                                    │
-│   └── PostgreSQL Database                               │
+│   └── PostgreSQL Database (chunks + annotations)        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Available but Unused HLS Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│   HLS Infrastructure (Available but Not Implemented)    │
+│   ├── HLS Service (hls_service.py)                     │
+│   │   ├── Adaptive Bitrate Streaming                    │
+│   │   ├── Multiple Quality Levels (360p/720p/1080p)    │
+│   │   ├── 10-Second Segments                           │
+│   │   └── Thumbnail Sprite Generation                   │
+│   ├── HLS API Endpoints (/api/v1/videos/{id}/hls/)     │
+│   └── hls.js Package (Installed but Unused)            │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -105,66 +156,104 @@ _Timeline click selection, green interval highlighting, frame preview on hover, 
 
 ### One-Command Demo Setup
 
-**Start the complete demo with frame preview:**
-
-```bash
-./scripts/start-demo.sh
-```
-
-**Start the demo with 5-minute chunks:**
+**Start the production demo with 5-minute WebM chunks (Recommended):**
 
 ```bash
 ./scripts/production-demo.sh
 ```
 
-This single command will:
+**Start the legacy demo with 2-minute chunks:**
 
-- ✅ Check dependencies (Docker, FFmpeg)
-- ✅ Clean up any existing setup
-- ✅ Create animated demo video (30 minutes with colorful content)
-- ✅ Start all services (Frontend, Backend, Database)
-- ✅ Run database migrations
-- ✅ Seed database with sample data
-- ✅ Generate video chunks for efficient streaming
-- ✅ Display access URLs and features
+```bash
+./scripts/start-demo.sh
+```
+
+### Production Demo Script Features
+
+The `production-demo.sh` script provides:
+
+- ✅ **Dependency Check**: Docker, Docker Compose, FFmpeg
+- ✅ **Clean Setup**: Removes existing containers and video files
+- ✅ **Video Generation**: Creates 6 x 5-minute WebM chunks (30 minutes total)
+- ✅ **Service Startup**: Frontend, Backend, PostgreSQL database
+- ✅ **Database Setup**: Creates tables and seeds production data
+- ✅ **Video Processing**: Generates WebM chunks with VP9 codec
+- ✅ **Range Request Support**: HTTP 206 Partial Content for smooth seeking
+- ✅ **Production Metadata**: Case ID, source type, chunk information
+- ✅ **Annotation System**: 6 time-based annotations for demo
+
+### Legacy Demo Script Features
+
+The `start-demo.sh` script provides:
+
+- ✅ **2-Minute Chunks**: Smaller chunks for educational purposes
+- ✅ **MP4 Format**: H.264 codec for broader compatibility
+- ✅ **Basic Streaming**: Simple chunk-based video delivery
 
 ### Using Your Own Videos
 
-**Quick Method - Replace Demo Video:**
+**Production Video Method (Recommended):**
+
+```bash
+# 1. Place your video in the production folder
+cp /path/to/your/video.webm videos/production/your_video.webm
+
+# 2. Update the production-demo.sh script to use your video
+# Edit the script to reference your video file
+
+# 3. Run the production demo script
+./scripts/production-demo.sh
+
+# 4. Open browser and enjoy!
+open http://localhost:3000
+```
+
+**Legacy Method - Replace Demo Video:**
 
 ```bash
 # 1. Place your video in the videos folder
 cp /path/to/your/video.mp4 videos/demo_video.mp4
 
-# 2. Run the demo script (auto-chunks your video)
+# 2. Run the legacy demo script (auto-chunks your video)
 ./scripts/start-demo.sh
 
 # 3. Open browser and enjoy!
 open http://localhost:3000
 ```
 
-**Your video will be automatically:**
+### Video Format Recommendations
 
-- ✅ **Chunked** into 2-minute segments for efficient loading
-- ✅ **Metadata stored** in database with chunk information
-- ✅ **Frame previews enabled** on timeline hover
-- ✅ **YouTube-like features** ready to use
+**For Production Use (Current Implementation):**
 
-**Supported Video Formats:**
+- **WebM** (VP9) - **Recommended** for optimal web streaming
+- **Resolution**: 1280x720 or higher
+- **Frame Rate**: 25-30 FPS
+- **Duration**: Any length (will be chunked into 5-minute segments)
+- **Codec**: VP9 with keyframes every 10 seconds for smooth seeking
 
-- **WebM** (VP9) - **Recommended** for web streaming (current default)
+**For Legacy Demo:**
+
 - **MP4** (H.264) - Good compatibility
-- **MOV** (H.264) - Apple format
-
-**Video Specifications:**
-
 - **Resolution**: Any (1280x720 recommended)
 - **Frame Rate**: 24-60 FPS
-- **Duration**: Any length (will be chunked automatically)
-- **Codec**: VP9 (WebM), H.264 (MP4), or VP8
-- **Streaming**: HTTP Range Requests for efficient seeking
+- **Duration**: Any length (will be chunked into 2-minute segments)
+- **Codec**: H.264 with frequent keyframes
 
-For detailed configuration options, see [docs/CUSTOM_VIDEO_GUIDE.md](docs/CUSTOM_VIDEO_GUIDE.md).
+### Video Processing Features
+
+**Production Video Processing:**
+
+- ✅ **5-Minute Chunks**: Production-ready segment size
+- ✅ **WebM Format**: VP9 codec for optimal streaming
+- ✅ **Range Request Support**: HTTP 206 Partial Content
+- ✅ **Metadata Storage**: Chunk information in PostgreSQL
+- ✅ **Case Management**: Support for case IDs and source types
+
+**Legacy Video Processing:**
+
+- ✅ **2-Minute Chunks**: Educational segment size
+- ✅ **MP4 Format**: H.264 codec for broad compatibility
+- ✅ **Basic Streaming**: Simple chunk-based delivery
 
 **Important:** Video files and chunks are automatically generated by the demo scripts and are excluded from git via `.gitignore`. This keeps the repository lightweight while allowing full functionality.
 
@@ -221,63 +310,80 @@ For detailed configuration options, see [docs/CUSTOM_VIDEO_GUIDE.md](docs/CUSTOM
 
 ### Configuration Options
 
-**Use HLS streaming (recommended):**
+**Production Demo (Current Default):**
 
 ```bash
+# Uses WebM streaming with 5-minute chunks
+./scripts/production-demo.sh
+```
+
+**Legacy Demo Options:**
+
+```bash
+# Use HLS streaming (available but not implemented in production player)
 USE_HLS=true ./scripts/start-demo.sh
-```
 
-**Use basic chunking:**
-
-```bash
+# Use basic chunking
 USE_HLS=false ./scripts/start-demo.sh
-```
 
-**Custom chunk duration:**
-
-```bash
+# Custom chunk duration (legacy demo only)
 CHUNK_DURATION=60 ./scripts/start-demo.sh  # 1-minute chunks
 ```
 
+**Note:** The production video player currently uses WebM streaming with HTTP Range Requests. HLS streaming is available in the backend but not implemented in the production player frontend.
+
 ## 🎮 Usage
 
-### YouTube-like Video Player
+### Production Video Player
 
-The application features a professional YouTube-like video player with:
+The application features a professional production video player with:
 
-**Key Features:**
+**Current Implementation:**
 
-- **Frame Preview on Hover**: Hover over timeline to see frame previews
+- **WebM Streaming**: Direct video streaming with HTTP Range Request support
+- **5-Minute Chunks**: Production-ready chunking for NFS-stored video files
+- **Seamless Chunk Transitions**: Automatic switching between video files
 - **Timeline Click Selection**: Click anywhere on timeline to select annotations
 - **Green Interval Highlighting**: Visual feedback showing selected annotation intervals
-- **WebM Streaming**: Optimized video format with HTTP range requests
+- **Frame Preview on Hover**: Hover over timeline to see frame previews
 - **Smooth Seeking**: Instant seeking without shaking or freezing
-- **Clean UI**: No red markers or visual artifacts
+- **Playback Speed Preservation**: Speed settings maintained across chunk transitions
+- **Always-Visible Cursor**: White cursor remains visible during timeline hover
+- **Clean UI**: No navigation buttons or visual artifacts
+
+**Available but Not Implemented:**
+
+- **HLS Streaming**: Backend HLS service available with adaptive bitrate
+- **Multiple Quality Levels**: 360p, 720p, 1080p variants supported
+- **Thumbnail Sprites**: Timeline thumbnail previews via HLS service
+- **10-Second Segments**: HLS segments for faster seeking
 
 ### Video Streaming Options
 
-**WebM Streaming (Current Default):**
+**WebM Streaming (Current Production Implementation):**
 
-- HTTP Range Request streaming
-- Optimized for web delivery
-- Smooth seeking without shaking
-- Efficient video loading
-- Professional streaming performance
+- ✅ **HTTP Range Request streaming** with 206 Partial Content support
+- ✅ **5-Minute Chunks** for production-ready video segments
+- ✅ **VP9 Codec** optimized for web delivery
+- ✅ **Smooth seeking** without shaking or freezing
+- ✅ **Efficient video loading** with range requests
+- ✅ **Professional streaming performance** for security footage analysis
 
-**HLS Streaming (Alternative):**
+**HLS Streaming (Available but Not Implemented):**
 
-- Adaptive bitrate streaming
-- Multiple quality levels (360p/720p/1080p)
-- 10-second segments for fast seeking
-- Professional streaming performance
-- Mobile optimized
+- ⚠️ **Backend HLS service available** but not used in production player
+- ⚠️ **Adaptive bitrate streaming** with multiple quality levels
+- ⚠️ **10-second segments** for faster seeking than 5-minute chunks
+- ⚠️ **360p/720p/1080p quality levels** supported
+- ⚠️ **Mobile optimized** streaming performance
+- ⚠️ **Thumbnail sprites** for timeline previews
 
-**Basic Chunking (Educational):**
+**Legacy Chunking (Educational):**
 
-- Configurable chunk duration (default: 2 minutes)
-- Manual chunk management
-- Good for learning and simple demos
-- Full control over chunking logic
+- ✅ **2-Minute chunks** for educational purposes
+- ✅ **MP4 format** with H.264 codec
+- ✅ **Basic streaming** without range request support
+- ✅ **Good for learning** and simple demos
 
 ## 📁 Project Structure
 
@@ -648,50 +754,65 @@ CREATE TABLE annotations (
 
 ## 🔌 API Documentation
 
-### Production Video API (Current Default)
+### Production Video API (Current Implementation)
 
 **Stream Video Chunk with Range Requests:**
 
 ```bash
 GET /api/v1/production/{filename}
+# Example: GET /api/v1/production/production_chunk_000.webm
+# Returns: HTTP 206 Partial Content with range request support
 ```
 
 **List Production Videos:**
 
 ```bash
 GET /api/v1/production/
+# Returns: List of available production video chunks
 ```
 
-### HLS Streaming API (Alternative)
+**Test Range Request Support:**
+
+```bash
+curl -v -H "Range: bytes=0-1023" http://localhost:8000/api/v1/production/production_chunk_000.webm
+# Should return: HTTP/1.1 206 Partial Content
+```
+
+### HLS Streaming API (Available but Not Used in Production Player)
 
 **Get HLS Master Playlist:**
 
 ```bash
 GET /api/v1/videos/{video_id}/hls/playlist.m3u8
+# Note: Not implemented in production video player frontend
 ```
 
 **Get Quality-Specific Playlist:**
 
 ```bash
 GET /api/v1/videos/{video_id}/hls/{quality}/playlist.m3u8
+# Note: Backend supports 360p, 720p, 1080p quality levels
 ```
 
 **Get HLS Segment:**
 
 ```bash
 GET /api/v1/videos/{video_id}/hls/{quality}/{segment}
+# Note: 10-second segments available but not used
 ```
 
 **Get Timeline Thumbnail:**
 
 ```bash
 GET /api/v1/videos/{video_id}/hls/thumbnails/{timestamp}.jpg
+# Note: Thumbnail sprites available but not implemented
 ```
 
 **Generate HLS Stream:**
 
 ```bash
 POST /api/v1/videos/{video_id}/hls/generate
+# Note: HLS service available but production player uses WebM streaming
 ```
 
 ### Video Chunking API
@@ -1032,11 +1153,14 @@ For support and questions:
 ### 🔧 **Configuration**
 
 ```bash
-# Demo with 5-minute chunks (current default)
+# Production demo with WebM streaming and 5-minute chunks (current default)
 ./scripts/production-demo.sh
 
-# Legacy demo with 2-minute chunks
+# Legacy demo with MP4 streaming and 2-minute chunks
 ./scripts/start-demo.sh
+
+# HLS streaming (available but not implemented in production player)
+USE_HLS=true ./scripts/start-demo.sh
 ```
 
 ### 📚 **Documentation**
