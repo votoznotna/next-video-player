@@ -680,10 +680,10 @@ const ProductionVideoPlayer = forwardRef<
                     <img
                       src={framePreview}
                       alt='Frame Preview'
-                      className='w-24 h-14 object-cover rounded'
+                      className='w-48 h-28 object-cover rounded'
                     />
                   ) : (
-                    <div className='w-24 h-14 bg-gray-700 rounded flex items-center justify-center text-xs'>
+                    <div className='w-48 h-28 bg-gray-700 rounded flex items-center justify-center text-sm'>
                       <div className='text-center'>
                         <div>Time: {formatTime(hoverTime || 0)}</div>
                         <div>

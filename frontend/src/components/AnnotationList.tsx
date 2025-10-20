@@ -60,8 +60,8 @@ export default function AnnotationList({
               key={annotation.id}
               className={`card p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
                 isAnnotationSelected(annotation)
-                  ? 'ring-2 ring-blue-500 bg-blue-50'
-                  : 'hover:bg-gray-50'
+                  ? 'border-4 border-green-500 bg-green-50 shadow-lg'
+                  : 'hover:bg-gray-50 border-2 border-transparent'
               }`}
               onClick={() => onAnnotationClick(annotation)}
             >
