@@ -599,9 +599,9 @@ const ProductionVideoPlayer = forwardRef<
         </div>
 
         {/* Controls */}
-        <div className='bg-gray-900 p-4'>
+        <div className='bg-gray-900'>
           {/* Progress Bar */}
-          <div className='mb-4'>
+          <div className='px-4 pt-4 pb-4'>
             <div
               ref={progressBarRef}
               className='relative h-4 bg-gray-600 rounded cursor-pointer hover:h-5 transition-all border border-gray-400 z-10'
@@ -711,7 +711,7 @@ const ProductionVideoPlayer = forwardRef<
           </div>
 
           {/* Control Buttons */}
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between px-4 pb-4'>
             <div className='flex items-center space-x-4'>
               <button
                 onClick={togglePlay}
