@@ -121,7 +121,7 @@ export default function AnnotationList({
                   </div>
                 </div>
 
-                <div className='flex items-center space-x-2'>
+                <div className='flex flex-col items-end space-y-2'>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
