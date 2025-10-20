@@ -11,6 +11,8 @@ import ProductionVideoPlayer, {
   ProductionVideoPlayerRef,
 } from './ProductionVideoPlayer';
 import AnnotationList from './AnnotationList';
+import AddAnnotationForm from './AddAnnotationForm';
+import { Plus } from 'lucide-react';
 
 interface VideoChunk {
   id: string;
@@ -65,6 +67,7 @@ const ProductionVideoPage: React.FC = () => {
     string | undefined
   >();
   const [currentTime, setCurrentTime] = useState(0);
+  const [showAddAnnotationForm, setShowAddAnnotationForm] = useState(false);
   const videoPlayerRef = useRef<ProductionVideoPlayerRef>(null);
 
   // Fetch production videos
@@ -129,6 +132,19 @@ const ProductionVideoPage: React.FC = () => {
 
   const handleTimeUpdate = (time: number) => {
     setCurrentTime(time);
+  };
+
+  const handleAddAnnotation = () => {
+    setShowAddAnnotationForm(true);
+  };
+
+  const handleCloseAddAnnotationForm = () => {
+    setShowAddAnnotationForm(false);
+  };
+
+  const handleAnnotationCreated = () => {
+    // The form will handle refetching annotations
+    setShowAddAnnotationForm(false);
   };
 
   if (videosLoading) {
@@ -298,7 +314,7 @@ const ProductionVideoPage: React.FC = () => {
                   {/* Left Side - Video Player and Chunks */}
                   <div className='xl:col-span-2 space-y-6'>
                     {/* Video Player */}
-                    <div className='max-w-4xl'>
+                    <div>
                       <ProductionVideoPlayer
                         ref={videoPlayerRef}
                         video={currentVideo}
@@ -346,6 +362,18 @@ const ProductionVideoPage: React.FC = () => {
 
                   {/* Right Side - Annotations */}
                   <div className='xl:col-span-1'>
+                    {/* Add Annotation Button */}
+                    <div className='mb-4'>
+                      <button
+                        onClick={handleAddAnnotation}
+                        className='w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors duration-200 font-medium'
+                      >
+                        <Plus size={20} />
+                        <span>Add Annotation</span>
+                      </button>
+                    </div>
+
+                    {/* Annotations List */}
                     <AnnotationList
                       annotations={annotations}
                       currentTime={currentTime}
@@ -366,6 +394,20 @@ const ProductionVideoPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Add Annotation Form Modal */}
+      {showAddAnnotationForm && selectedVideo && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
+            <AddAnnotationForm
+              videoId={selectedVideo.id}
+              currentTime={currentTime}
+              onClose={handleCloseAddAnnotationForm}
+              onSuccess={handleAnnotationCreated}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
