@@ -601,7 +601,7 @@ const ProductionVideoPlayer = forwardRef<
         {/* Controls */}
         <div className='bg-gray-900'>
           {/* Progress Bar */}
-          <div className='px-4 pt-4 pb-4'>
+          <div className='px-0 pt-4 pb-4'>
             <div
               ref={progressBarRef}
               className='relative h-4 bg-gray-600 rounded cursor-pointer hover:h-5 transition-all border border-gray-400 z-10'
@@ -672,7 +672,12 @@ const ProductionVideoPlayer = forwardRef<
                   className='absolute bg-black bg-opacity-90 text-white p-2 rounded-lg shadow-lg z-20'
                   style={{
                     left: `${previewPosition}%`,
-                    transform: previewPosition > 85 ? 'translateX(-100%)' : previewPosition < 15 ? 'translateX(0%)' : 'translateX(-50%)',
+                    transform:
+                      previewPosition > 85
+                        ? 'translateX(-100%)'
+                        : previewPosition < 15
+                          ? 'translateX(0%)'
+                          : 'translateX(-50%)',
                     bottom: '30px',
                     minWidth: '192px', // Ensure minimum width (w-48 = 192px)
                   }}
