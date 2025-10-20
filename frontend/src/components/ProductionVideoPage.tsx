@@ -363,7 +363,7 @@ const ProductionVideoPage: React.FC = () => {
                   {/* Right Side - Annotations */}
                   <div className='xl:col-span-1'>
                     {/* Add Annotation Button */}
-                    <div className='mb-4'>
+                    <div className='mb-2'>
                       <button
                         onClick={handleAddAnnotation}
                         className='w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors duration-200 font-medium'
