@@ -44,10 +44,6 @@ export default function AnnotationList({
 
   return (
     <div className='space-y-3'>
-      <h3 className='text-lg font-semibold text-gray-900 mb-4'>
-        Chapters & Annotations
-      </h3>
-
       {annotations.length === 0 ? (
         <div className='text-center py-8 text-gray-500'>
           <Clock size={48} className='mx-auto mb-4 opacity-50' />
