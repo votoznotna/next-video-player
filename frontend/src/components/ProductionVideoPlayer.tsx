@@ -584,38 +584,36 @@ const ProductionVideoPlayer = forwardRef<
     };
 
     const handleSkipBackward = () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.max(
-          0,
-          videoRef.current.currentTime - 10
-        );
+      if (videoRef.current && currentChunk) {
+        const newGlobalTime = Math.max(0, currentTime - 10);
+        handleSeekToTime(newGlobalTime);
       }
     };
 
     const handleSkipForward = () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.min(
-          videoRef.current.duration,
-          videoRef.current.currentTime + 10
+      if (videoRef.current && currentChunk) {
+        const newGlobalTime = Math.min(
+          video.totalDuration || duration,
+          currentTime + 10
         );
+        handleSeekToTime(newGlobalTime);
       }
     };
 
     const handleFrameBackward = () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.max(
-          0,
-          videoRef.current.currentTime - 1 / 30
-        );
+      if (videoRef.current && currentChunk) {
+        const newGlobalTime = Math.max(0, currentTime - 1 / 30);
+        handleSeekToTime(newGlobalTime);
       }
     };
 
     const handleFrameForward = () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.min(
-          videoRef.current.duration,
-          videoRef.current.currentTime + 1 / 30
+      if (videoRef.current && currentChunk) {
+        const newGlobalTime = Math.min(
+          video.totalDuration || duration,
+          currentTime + 1 / 30
         );
+        handleSeekToTime(newGlobalTime);
       }
     };
 
@@ -975,7 +973,7 @@ const ProductionVideoPlayer = forwardRef<
               {/* Keyboard Shortcuts Button */}
               <button
                 onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
-                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white px-3 py-2 rounded transition-all duration-200 border border-white border-opacity-20 text-sm font-medium'
+                className='bg-white bg-opacity-10 hover:bg-opacity-20 text-white ml-3 px-3 py-2 rounded transition-all duration-200 border border-white border-opacity-20 text-sm font-medium'
                 title='Keyboard Shortcuts (?)'
               >
                 ?
