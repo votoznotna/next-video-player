@@ -215,6 +215,7 @@ const ProductionVideoPlayer = forwardRef<
                     videoRef.current?.currentTime.toFixed(1)
                   );
                   setCurrentTime(time);
+                  setDisplayTime(time); // Update display time for cursor position
                   setIsSeeking(false);
                   // Resume playing if it was playing before
                   if (wasPlaying) {
@@ -241,6 +242,7 @@ const ProductionVideoPlayer = forwardRef<
             videoRef.current?.currentTime.toFixed(1)
           );
           setCurrentTime(time);
+          setDisplayTime(time); // Update display time for cursor position
           setIsSeeking(false);
           // Resume playing if it was playing before
           if (wasPlaying) {
